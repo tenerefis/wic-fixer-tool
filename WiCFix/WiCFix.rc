@@ -1,0 +1,269 @@
+// Microsoft Visual C++ generated resource script.
+//
+#pragma code_page(65001)
+
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_WICFIX              ICON                    "WiCFix.ico"
+
+IDI_SMALL               ICON                    "small.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDC_WICFIX MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "Change CD &Key",              IDM_CHANGECDKEY
+        MENUITEM "E&xit",                       IDM_EXIT
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&View Help",                  IDM_VIEWHELP
+        MENUITEM "Check for &Updates",          IDM_UPDATE
+        MENUITEM "&About ...",                  IDM_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_CDKEYBOX DIALOGEX 0, 0, 237, 58
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    EDITTEXT        ID_CDKEY1,14,14,40,12,ES_CENTER | ES_UPPERCASE | ES_AUTOHSCROLL | WS_GROUP
+    EDITTEXT        ID_CDKEY2,56,14,40,12,ES_CENTER | ES_UPPERCASE | ES_AUTOHSCROLL | WS_GROUP
+    EDITTEXT        ID_CDKEY3,98,14,40,12,ES_CENTER | ES_UPPERCASE | ES_AUTOHSCROLL | WS_GROUP
+    EDITTEXT        ID_CDKEY4,140,14,40,12,ES_CENTER | ES_UPPERCASE | ES_AUTOHSCROLL | WS_GROUP
+    EDITTEXT        ID_CDKEY5,182,14,40,12,ES_CENTER | ES_UPPERCASE | ES_AUTOHSCROLL | WS_GROUP
+    DEFPUSHBUTTON   "",ID_SAVE,55,37,50,14,WS_GROUP
+    PUSHBUTTON      "",ID_CANCEL,130,37,50,14,WS_GROUP
+END
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,14,14,20,20
+    LTEXT           "",ID_LBLABOUT,42,14,114,8,SS_NOPREFIX
+    LTEXT           "",ID_LBLCOPY,42,26,114,8
+    DEFPUSHBUTTON   "",ID_OK,113,41,50,14,WS_GROUP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_CDKEYBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 230
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 51
+    END
+
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 163
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,0,1,0
+ PRODUCTVERSION 0,0,1,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "WiCFix.exe"
+            VALUE "FileDescription", "WiCFix.exe"
+            VALUE "FileVersion", "0.0.1.0"
+            VALUE "InternalName", "WiCFix.exe"
+            VALUE "LegalCopyright", "Copyright (C) 2015 - 2023"
+            VALUE "OriginalFilename", "WiCFix.exe"
+            VALUE "ProductName", "WiCFix.exe"
+            VALUE "ProductVersion", "0.0.1.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_APP_TITLE           "World in Conflict Repair Utility v0.1b"
+    IDS_MNUFILE             "&File"
+    IDS_MNUITMCHANGEKEY     "Change CD &Key"
+    IDS_MNUITMEXIT          "E&xit"
+    IDS_MNUHELP             "&Help"
+    IDS_MNUITMVIEWHELP      "&View Help"
+    IDC_WICFIX              "WICFIX"
+    IDS_MNUITMUPDATE        "Check for &Update"
+    IDS_MNUITMABOUT         "&About"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_LBLWICDIR           "World in Conflict installation directory:"
+    IDS_BTNBROWSE           "Browse"
+    IDS_FOLDERDLG_TITLE     "Select the World in Conflict directory"
+    IDS_GROUPBOX            "Options:"
+    IDS_LBLSTATUSOK         "DONE"
+    IDS_LBLSTATUSBAD        "NOT DONE"
+    IDS_CHKINSTALLMPFIX     "Install Multiplayer Fix"
+    IDS_CHKINSTALLMAPS      "Install additional maps"
+    IDS_CHKINSTALLTXT       "Open wicautoexec.txt"
+    IDS_CHKDXFLAG           "Set myDX10Flag to 0"
+    IDS_RESERVED1           "Reserved"
+    IDS_RESERVED2           "Reserved"
+    IDS_BTNINSTALL          "Install"
+    IDS_BTNUNINSTALL        "Uninstall"
+    IDS_LBLLOG              "Log:"
+    IDS_MSGBOX_CAPTION_ERROR "Error"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_MSGBOX_CAPTION_INFO "Information"
+    IDS_MSGBOX_CAPTION_QUESTION "Question"
+    IDS_MSGBOX_GAMEFOLDER_NOTFOUND 
+                            "Please select the World in Conflict game folder."
+    IDS_MSGBOX_UNINSTALL_CONFIRMATION 
+                            "Are you sure you want to remove the multiplayer fix?"
+    IDS_MSGBOX_HELPPAGE_CONFIRMATION 
+                            "This will take you to a webpage, would you like to continue?"
+    IDS_MSGBOX_UPDATE_AVAILABLE 
+                            "An update is available\n\nVisit website to download the update?"
+    IDS_MSGBOX_NO_UPDATE_AVAILABLE "No update available."
+    IDS_MSGBOX_INCORRECT_GAME_VERSION 
+                            "World in Conflict Patch 1.0.1.1 is required\n\nVisit website to download patch?"
+    IDS_MSGBOX_CDKEY_NOTSAVED "CD key was not saved."
+    IDS_MSGBOX_CDKEY_BADLENGTH "Please enter the CD key correctly."
+    IDS_CDKEYDLG_TITLE      "Change CD key"
+    IDS_CDKEYDLG_BTNSAVE    "Save"
+    IDS_CDKEYDLG_BTNCANCEL  "Cancel"
+    IDS_ABOUTDLG_TITLE      "About WiCFix"
+    IDS_ABOUTDLG_LBLABOUT   "WiCFix, Version 0.1b"
+    IDS_ABOUTDLG_LBLCOPY    "Copyright (c) 2015 - 2023"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTDLG_BTNOK      "OK"
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
