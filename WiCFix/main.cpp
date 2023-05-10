@@ -44,6 +44,9 @@ const WCHAR *szWicFixFiles[8] =
 	L"wicautoexec.txt"
 };
 
+BOOL bMapTxtFilePresent = FALSE;
+BOOL bWicAutoexecPresent = FALSE;
+
 // map list
 MAPSTRUCT szMapList[TOTAL_MAPS];
 
@@ -613,11 +616,29 @@ BOOL SetApplicationState(ApplicationStateEnum iState, DWORD dwFlag)
 		}
 	}
 
+	if (!bMapTxtFilePresent)
+	{
+		ShowWindow(hWndChkInstallMaps, SW_HIDE);
+		SendMessage(hWndChkInstallMaps, BM_SETCHECK, BST_UNCHECKED, 0);
+	}
+
+	if (!bWicAutoexecPresent)
+	{
+		ShowWindow(hWndChkInstallTxt, SW_HIDE);
+		SendMessage(hWndChkInstallTxt, BM_SETCHECK, BST_UNCHECKED, 0);
+	}
+
 	return TRUE;
 }
 
 BOOL LoadSettings(HWND hWnd)
 {
+	if (file_exists(L"data\\maps.txt"))
+		bMapTxtFilePresent = TRUE;
+
+	if (file_exists(L"data\\wicautoexec.txt"))
+		bWicAutoexecPresent = TRUE;
+
 	BuildSystemPaths();
 	ReadMapFile();
 	mySettings.Load();
@@ -651,6 +672,9 @@ BOOL BuildSystemPaths()
 
 BOOL ReadMapFile()
 {
+	if (!bMapTxtFilePresent)
+		return FALSE;
+
 	std::wifstream mapFile(L"data\\maps.txt", std::wifstream::in);
 	std::wstring line;
 
