@@ -393,8 +393,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				WCHAR szSelectedPath[MAX_PATH] = L"";
 				WCHAR szCheckPath[MAX_PATH] = L"";
 
-				//if (FileOpenDialog(hWnd, szSelectedPath))
-				if (BrowseFolderDialog(hWnd, szSelectedPath))
+				if (FileOpenDialog(hWnd, szSelectedPath))
 				{
 					wcscpy_s(szCheckPath, szSelectedPath);
 					wcscat_s(szCheckPath, L"wic.exe");
@@ -830,7 +829,7 @@ BOOL FileOpenDialog(HWND hWnd, LPWSTR pszPath)
 			{
 				if (SUCCEEDED(pFileOpen->SetOptions(dwFlags | FOS_FORCEFILESYSTEM)))
 				{
-					COMDLG_FILTERSPEC fsFileTypes[] = { L"Application", L"*.exe" };
+					COMDLG_FILTERSPEC fsFileTypes[] = { L"Application (*.exe)", L"*.exe" };
 
 					if (SUCCEEDED(pFileOpen->SetFileTypes(ARRAYSIZE(fsFileTypes), fsFileTypes)))
 					{
