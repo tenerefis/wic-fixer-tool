@@ -18,6 +18,9 @@ WiCFix downloaded from [Massgate](https://www.massgate.org/) is packaged with of
 **Other requirements:**
 1. create a folder named 'data' in the working directory used to run WiCFix.exe
 2. copy all the patched dlls, game exes and official maps to the folder
-3. copy dbghelp.dll to the folder, rename it to dbghelp_old.dll
+3. copy the original dbghelp.dll to the folder, rename it to dbghelp_old.dll
 4. create a file named maps.txt, add each map name, one per line
 5. create a wicautoexec.txt with camerafreedom and cameramaxheight commands
+
+**Screenshot::**
+![Screenshot](https://www.massgate.org/wicfix/screenshot.png)
