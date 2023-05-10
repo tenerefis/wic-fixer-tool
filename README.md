@@ -22,5 +22,6 @@ WiCFix downloaded from [Massgate](https://www.massgate.org/) is packaged with of
 4. create a file named maps.txt, add each map name, one per line
 5. create a wicautoexec.txt with camerafreedom and cameramaxheight commands
 
-**Screenshot::**
+**Screenshot:**
+
 ![Screenshot](https://www.massgate.org/wicfix/screenshot.png)
