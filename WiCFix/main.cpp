@@ -461,28 +461,39 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			switch (id)
 			{
 				case ID_LBLINSTALLMPFIXDONE:
+					SetBkMode((HDC)wParam, TRANSPARENT);
 					SetTextColor((HDC)wParam, RGB(0, 200, 0));
+					return (LRESULT)GetSysColorBrush(COLOR_MENU);
 					break;
 				case ID_LBLINSTALLMAPSDONE:
+					SetBkMode((HDC)wParam, TRANSPARENT);
 					SetTextColor((HDC)wParam, RGB(0, 200, 0));
+					return (LRESULT)GetSysColorBrush(COLOR_MENU);
 					break;
 				case ID_LBLINSTALLTXTDONE:
+					SetBkMode((HDC)wParam, TRANSPARENT);
 					SetTextColor((HDC)wParam, RGB(0, 200, 0));
+					return (LRESULT)GetSysColorBrush(COLOR_MENU);
 					break;
 				case ID_LBLINSTALLMPFIXNOTDONE:
+					SetBkMode((HDC)wParam, TRANSPARENT);
 					SetTextColor((HDC)wParam, RGB(200, 0, 0));
+					return (LRESULT)GetSysColorBrush(COLOR_MENU);
 					break;
 				case ID_LBLINSTALLMAPSNOTDONE:
+					SetBkMode((HDC)wParam, TRANSPARENT);
 					SetTextColor((HDC)wParam, RGB(200, 0, 0));
+					return (LRESULT)GetSysColorBrush(COLOR_MENU);
 					break;
 				case ID_LBLINSTALLTXTNOTDONE:
+					SetBkMode((HDC)wParam, TRANSPARENT);
 					SetTextColor((HDC)wParam, RGB(200, 0, 0));
+					return (LRESULT)GetSysColorBrush(COLOR_MENU);
 					break;
 			}
-
-			SetBkMode((HDC)wParam, TRANSPARENT);
-
-			return (BOOL)GetSysColorBrush(COLOR_MENU);
+			// apparantly the return value is supposed to be a HBRUSH
+			// but this was the only way to fix the blurry text in the log window
+			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
 		break;
 		case WM_DESTROY:
