@@ -30,6 +30,7 @@ HWND create_groupbox(LPCWSTR szCaption, int x, int y, int width, int height, HWN
 HWND create_edit(int x, int y, int width, int height, HWND hWnd, UINT ID);
 HWND create_edit_ml(int x, int y, int width, int height, HWND hWnd, UINT ID);
 HWND create_static(LPCWSTR szCaption, int x, int y, int width, int height, HWND hWnd, UINT ID);
+HWND create_progressbar(int x, int y, int width, int height, HWND hWnd, UINT ID);
 
 // system folders
 HRESULT get_system_drive(LPWSTR pszPath);

@@ -181,6 +181,13 @@ HWND create_static(LPCWSTR szCaption, int x, int y, int width, int height, HWND 
 		hWnd, (HMENU)ID, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL);
 }
 
+HWND create_progressbar(int x, int y, int width, int height, HWND hWnd, UINT ID)
+{
+	return CreateWindow(PROGRESS_CLASS, NULL, WS_CHILD | WS_VISIBLE | PBS_SMOOTH, 
+		x, y, width, height, 
+		hWnd, (HMENU)ID, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL);
+}
+
 HRESULT get_system_drive(LPWSTR pszPath)
 {
 	WCHAR szPath[MAX_PATH] = L"";

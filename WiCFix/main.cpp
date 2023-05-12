@@ -9,6 +9,7 @@ enum ApplicationStateEnum : int
 	BROWSE_FOLDER,
 	READY,
 	NOT_INSTALLED,
+	WORKING,
 	INSTALLED
 };
 
@@ -46,6 +47,9 @@ const WCHAR *szWicFixFiles[8] =
 
 BOOL bMapTxtFilePresent = FALSE;
 BOOL bWicAutoexecPresent = FALSE;
+ULONGLONG ullTotalBytesTransferred = 0;
+ULONGLONG ullLastBytesTransferred = 0;
+ULONGLONG ullTotalSizeOfAllMaps = 0;
 
 // map list
 MAPSTRUCT szMapList[TOTAL_MAPS];
@@ -130,6 +134,8 @@ HWND hWndLblInstallTxtNotDone;
 HWND hWndBtnInstall;
 HWND hWndBtnUnInstall;
 
+HWND hWndProgressBar;
+
 HWND hWndLogWindow;
 
 // default window process pointer for returning from captured keypresses in the cd key dialog
@@ -151,6 +157,10 @@ BOOL				FileOpenDialog(HWND, LPWSTR);
 BOOL				BrowseFolderDialog(HWND, LPWSTR);
 BOOL				InstallFixes(HWND);
 BOOL				UninstallFixes();
+
+DWORD CALLBACK		CopyProgressRoutine(LARGE_INTEGER, LARGE_INTEGER, LARGE_INTEGER, LARGE_INTEGER, DWORD, DWORD, HANDLE, HANDLE, LPVOID);
+VOID				ShowProgressbar() { ShowWindow(hWndProgressBar, SW_SHOWNORMAL); ullTotalBytesTransferred = 0; };
+VOID				HideProgressbar() { ShowWindow(hWndProgressBar, SW_HIDE); ullTotalBytesTransferred = 0; };
 
 INT_PTR CALLBACK	CDKeyDialog(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
@@ -366,6 +376,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				SetWindowText(hWndTxtWicDir, mySettings.myInstallPath);
 				SetApplicationState(INSTALLED, dwFlag);
 			}
+
+			return 0;
 		}
 		break;
 		case WM_COMMAND:
@@ -415,6 +427,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 			case ID_BTNINSTALL:
 			{
+				SetApplicationState(WORKING, 0);
+				ShowProgressbar();
 				InstallFixes(hWnd);
 
 				DWORD dwFlag = 0;
@@ -429,6 +443,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					dwFlag |= TXTINSTALLED;
 
 				log_window(L"Multiplayer Fix has been applied.");
+				HideProgressbar();
 				SetApplicationState(INSTALLED, dwFlag);
 			}
 			break;
@@ -437,6 +452,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				int iResult = MessageBox(hWnd, szMsgBoxUninstallConfirmation, szMsgBoxCaptionQuestion, MB_OKCANCEL | MB_ICONQUESTION);
 				if (iResult == IDOK)
 				{
+					SetApplicationState(WORKING, 0);
 					UninstallFixes();
 					log_window(L"Multiplayer Fix has been removed.");
 					SetApplicationState(NOT_INSTALLED, 0);
@@ -571,6 +587,17 @@ BOOL SetApplicationState(ApplicationStateEnum iState, DWORD dwFlag)
 			//SendMessage(hWndChkInstallTxt, BM_SETCHECK, BST_CHECKED, 0);
 		}
 		break;
+		case WORKING:
+		{
+			EnableWindow(hWndTxtWicDir, FALSE);
+			EnableWindow(hWndBtnBrowse, FALSE);
+			EnableWindow(hWndChkInstallMPFix, FALSE);
+			EnableWindow(hWndChkInstallMaps, FALSE);
+			EnableWindow(hWndChkInstallTxt, FALSE);
+			EnableWindow(hWndBtnInstall, FALSE);
+			EnableWindow(hWndBtnUnInstall, FALSE);
+		}
+		break;
 		case INSTALLED:
 		{
 			EnableWindow(hWndTxtWicDir, FALSE);
@@ -693,7 +720,21 @@ BOOL ReadMapFile()
 	{
 		if (i < TOTAL_MAPS)
 		{
+			WCHAR szFilename[MAX_PATH] = L"";
+			LARGE_INTEGER ullFileSize = { 0 };
+			WIN32_FILE_ATTRIBUTE_DATA lpInfo;
+			memset(&lpInfo, 0, sizeof(lpInfo));
+
 			wcscpy_s(szMapList[i].mapname, MAX_PATH, line.c_str());
+
+			wcscpy_s(szFilename, L"data\\");
+			wcscat_s(szFilename, szMapList[i].mapname);
+
+			GetFileAttributesEx(szFilename, GetFileExInfoStandard, &lpInfo);
+			ullFileSize.HighPart = lpInfo.nFileSizeHigh;
+			ullFileSize.LowPart = lpInfo.nFileSizeLow;
+
+			ullTotalSizeOfAllMaps += ullFileSize.QuadPart;
 			i++;
 		}
 	}
@@ -1052,6 +1093,7 @@ BOOL InstallFixes(HWND hWnd)
 				wcscat_s(szInstallDest[i], szWicFixFiles[i]);
 
 				// should there be special cases for steam, gog and uplay?
+				log_window(L"Copy: " + std::wstring(szWicFixFiles[i]) + L" to " + std::wstring(szInstallPath));
 				file_copy(szInstallSrc[i], szInstallDest[i]);
 			}
 
@@ -1084,9 +1126,10 @@ BOOL InstallFixes(HWND hWnd)
 					wcscat_s(szInstallMapsDest[i], L"World in Conflict\\Downloaded\\maps\\");
 					wcscat_s(szInstallMapsDest[i], szMapList[i].mapname);
 
-					if (!file_exists(szInstallMapsDest[i]))
+					if (!file_exists(szInstallMapsSrc[i]) || !file_exists(szInstallMapsDest[i]))
 					{
-						file_copy(szInstallMapsSrc[i], szInstallMapsDest[i]);
+						log_window(L"Copy: " + std::wstring(szMapList[i].mapname) + L" to " + std::wstring(szCreateMapsFolder) + L"\\");
+						CopyFileEx(szInstallMapsSrc[i], szInstallMapsDest[i], (LPPROGRESS_ROUTINE)CopyProgressRoutine, NULL, NULL, COPY_FILE_FAIL_IF_EXISTS);
 						szMapList[i].installed = true;
 					}
 				}
@@ -1107,7 +1150,10 @@ BOOL InstallFixes(HWND hWnd)
 				wcscat_s(szInstallDest[WICAUTOEXEC_TXT], szWicFixFiles[WICAUTOEXEC_TXT]);
 				
 				if (!file_exists(szInstallDest[WICAUTOEXEC_TXT]))
+				{
+					log_window(L"Copy: " + std::wstring(szWicFixFiles[WICAUTOEXEC_TXT]) + L" to " + std::wstring(szMyDocuments) + L"World in Conflict\\");
 					file_copy(szInstallSrc[WICAUTOEXEC_TXT], szInstallDest[WICAUTOEXEC_TXT]);
+				}
 
 				mySettings.wicautoexecInstalled = true;
 
@@ -1191,6 +1237,21 @@ BOOL UninstallFixes()
 	mySettings.Delete();
 
 	return TRUE;
+}
+
+DWORD CALLBACK CopyProgressRoutine(LARGE_INTEGER TotalFileSize, LARGE_INTEGER TotalBytesTransferred, LARGE_INTEGER StreamSize, LARGE_INTEGER StreamBytesTransferred,
+	DWORD dwStreamNumber, DWORD dwCallbackReason, HANDLE hSourceFile, HANDLE hDestinationFile, LPVOID lpData)
+{
+	ullTotalBytesTransferred += TotalBytesTransferred.QuadPart - ullLastBytesTransferred;
+	ullLastBytesTransferred = TotalBytesTransferred.QuadPart;
+
+	if (ullLastBytesTransferred == TotalFileSize.QuadPart)
+		ullLastBytesTransferred = 0;
+	
+	double dblPercent = ((double)ullTotalBytesTransferred / (double)ullTotalSizeOfAllMaps) * 100;
+	SendMessage(hWndProgressBar, PBM_SETPOS, (UINT)dblPercent, 0);
+	
+	return PROGRESS_CONTINUE;
 }
 
 INT_PTR CALLBACK CDKeyDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
@@ -1368,6 +1429,12 @@ BOOL CreateFormObjects(HWND hWnd)
 	ShowWindow(hWndLblInstallMPFixNotDone, SW_HIDE);
 	ShowWindow(hWndLblInstallMapsNotDone, SW_HIDE);
 	ShowWindow(hWndLblInstallTxtNotDone, SW_HIDE);
+	
+	/* progress bar */
+	hWndProgressBar = create_progressbar(20, 200, 275, 15, hWnd, 4000);
+	SendMessage(hWndProgressBar, PBM_SETRANGE, 0, MAKELPARAM(0, 100));
+	SendMessage(hWndProgressBar, PBM_SETSTEP, 1, 0);
+	HideProgressbar();
 
 	hWndBtnInstall = create_button(szBtnInstall, 300, 195, 80, 20, hWnd, ID_BTNINSTALL, BS_PUSHBUTTON);
 	hWndBtnUnInstall = create_button(szBtnUnInstall, 385, 195, 80, 20, hWnd, ID_BTNUNINSTALL, BS_PUSHBUTTON);
