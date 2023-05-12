@@ -71,6 +71,7 @@
 #define ID_BTNINSTALL                   1012
 #define ID_BTNUNINSTALL                 1013
 #define ID_LOGWINDOW                    1014
+#define ID_PROGRESSBAR                  1015
 #define ID_CDKEY1                       2000
 #define ID_CDKEY2                       2001
 #define ID_CDKEY3                       2002

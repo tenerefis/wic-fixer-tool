@@ -1431,7 +1431,7 @@ BOOL CreateFormObjects(HWND hWnd)
 	ShowWindow(hWndLblInstallTxtNotDone, SW_HIDE);
 	
 	/* progress bar */
-	hWndProgressBar = create_progressbar(20, 200, 275, 15, hWnd, 4000);
+	hWndProgressBar = create_progressbar(20, 200, 275, 15, hWnd, ID_PROGRESSBAR);
 	SendMessage(hWndProgressBar, PBM_SETRANGE, 0, MAKELPARAM(0, 100));
 	SendMessage(hWndProgressBar, PBM_SETSTEP, 1, 0);
 	HideProgressbar();
