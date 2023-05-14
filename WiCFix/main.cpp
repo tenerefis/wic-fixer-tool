@@ -55,7 +55,7 @@ ULONGLONG ullTotalSizeOfAllMaps = 0;
 MAPSTRUCT szMapList[TOTAL_MAPS];
 
 // string buffers for created paths
-WCHAR szKnownPaths[5][MAX_PATH] = { L"", L"", L"", L"", L"" };
+WCHAR szKnownPaths[7][MAX_PATH] = { L"", L"", L"", L"", L"" };
 WCHAR szDrive[MAX_PATH] = L"";
 WCHAR szProgramFiles[MAX_PATH] = L"";
 WCHAR szMyDocuments[MAX_PATH] = L"";
@@ -762,11 +762,13 @@ BOOL FindGameFolder(LPWSTR pszPath)
 			wcscpy_s(szKnownPaths[1], szProgramFiles);
 			wcscpy_s(szKnownPaths[2], szProgramFiles);
 			wcscpy_s(szKnownPaths[3], szProgramFiles);
+			wcscpy_s(szKnownPaths[4], szProgramFiles);
 
 			wcscat_s(szKnownPaths[0], L"Sierra Entertainment\\World in Conflict\\");
 			wcscat_s(szKnownPaths[1], L"Ubisoft\\World in Conflict\\");
 			wcscat_s(szKnownPaths[2], L"Ubisoft\\Ubisoft Game Launcher\\games\\World in Conflict\\");
 			wcscat_s(szKnownPaths[3], L"Steam\\steamapps\\common\\World in Conflict\\");
+			wcscat_s(szKnownPaths[4], L"GOG Galaxy\\Games\\World in Conflict - Complete Edition\\");
 		}
 		else
 		{
@@ -775,17 +777,21 @@ BOOL FindGameFolder(LPWSTR pszPath)
 			wcscpy_s(szKnownPaths[1], L"C:\\Program Files (x86)\\Ubisoft\\World in Conflict\\");
 			wcscpy_s(szKnownPaths[2], L"C:\\Program Files (x86)\\Ubisoft\\Ubisoft Game Launcher\\games\\World in Conflict\\");
 			wcscpy_s(szKnownPaths[3], L"C:\\Program Files (x86)\\Steam\\steamapps\\common\\World in Conflict\\");
+			wcscpy_s(szKnownPaths[4], L"C:\\Program Files (x86)\\GOG Galaxy\\Games\\World in Conflict - Complete Edition\\");
 		}
-
-		/* \\GOG Galaxy\\Games\\World in Conflict - Complete Edition */
+		
 		if (wcslen(szDrive) > 0)
 		{
-			wcscpy_s(szKnownPaths[4], szDrive);
-			wcscat_s(szKnownPaths[4], L"GOG Galaxy\\Games\\World in Conflict - Complete Edition\\");
+			wcscpy_s(szKnownPaths[5], szDrive);
+			wcscpy_s(szKnownPaths[6], szDrive);
+
+			wcscat_s(szKnownPaths[5], L"GOG Galaxy\\Games\\World in Conflict - Complete Edition\\");
+			wcscat_s(szKnownPaths[6], L"GOG Games\\World in Conflict - Complete Edition\\");
 		}
 		else
 		{
-			wcscpy_s(szKnownPaths[4], L"C:\\GOG Galaxy\\Games\\World in Conflict - Complete Edition\\");
+			wcscpy_s(szKnownPaths[5], L"C:\\GOG Galaxy\\Games\\World in Conflict - Complete Edition\\");
+			wcscpy_s(szKnownPaths[6], L"C:\\GOG Games\\World in Conflict - Complete Edition\\");
 		}
 
 		for (WCHAR* knownPath : szKnownPaths)
@@ -1174,6 +1180,7 @@ BOOL InstallFixes(HWND hWnd)
 			if (!wic_registry_version(szVersion))
 			{
 				write_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"Version", L"1.0.1.1");
+				wcscpy_s(szVersion, L"1.0.1.1");
 				mySettings.registryFixed = true;
 			}
 			else
@@ -1181,6 +1188,7 @@ BOOL InstallFixes(HWND hWnd)
 				if (!wcsstr(szVersion, L"1.0.1.1"))
 				{
 					write_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"Version", L"1.0.1.1");
+					wcscpy_s(szVersion, L"1.0.1.1");
 					mySettings.registryFixed = true;
 				}
 			}
