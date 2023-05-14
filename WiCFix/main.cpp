@@ -405,7 +405,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				WCHAR szSelectedPath[MAX_PATH] = L"";
 				WCHAR szCheckPath[MAX_PATH] = L"";
 
-				if (FileOpenDialog(hWnd, szSelectedPath))
+				if (BrowseFolderDialog(hWnd, szSelectedPath))
 				{
 					wcscpy_s(szCheckPath, szSelectedPath);
 					wcscat_s(szCheckPath, L"wic.exe");
@@ -899,7 +899,7 @@ BOOL FileOpenDialog(HWND hWnd, LPWSTR pszPath)
 										LPWSTR pszFileName;
 
 										if (SUCCEEDED(pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath)) 
-											&& SUCCEEDED(pItem->GetDisplayName(SIGDN_NORMALDISPLAY, &pszFileName)))
+											&& SUCCEEDED(pItem->GetDisplayName(SIGDN_PARENTRELATIVEPARSING, &pszFileName)))
 										{
 											wcsncpy_s(pszPath, MAX_PATH, pszFilePath, wcslen(pszFilePath) - wcslen(pszFileName));
 											bFound = TRUE;
