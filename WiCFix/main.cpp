@@ -429,22 +429,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				SetApplicationState(WORKING, 0);
 				ShowProgressbar();
-				InstallFixes(hWnd);
 
-				DWORD dwFlag = 0;
+				if (!InstallFixes(hWnd))
+				{
+					HideProgressbar();
+					SetApplicationState(READY, 0);
+				}
+				else
+				{
+					DWORD dwFlag = 0;
 
-				if (mySettings.mpFixInstalled)
-					dwFlag |= MPFIXINSTALLED;
+					if (mySettings.mpFixInstalled)
+						dwFlag |= MPFIXINSTALLED;
 
-				if (mySettings.mapsInstalled)
-					dwFlag |= MAPSINSTALLED;
+					if (mySettings.mapsInstalled)
+						dwFlag |= MAPSINSTALLED;
 
-				if (mySettings.wicautoexecInstalled)
-					dwFlag |= TXTINSTALLED;
+					if (mySettings.wicautoexecInstalled)
+						dwFlag |= TXTINSTALLED;
 
-				log_window(L"Multiplayer Fix has been applied.");
-				HideProgressbar();
-				SetApplicationState(INSTALLED, dwFlag);
+					log_window(L"Multiplayer Fix has been applied.");
+					HideProgressbar();
+					SetApplicationState(INSTALLED, dwFlag);
+				}
 			}
 			break;
 			case ID_BTNUNINSTALL:
@@ -1059,6 +1066,7 @@ BOOL InstallFixes(HWND hWnd)
 	if (!file_exists(szInstallExePath))
 	{
 		MessageBox(hWnd, szMsgBoxGameFolderNotFound, szMsgBoxCaptionError, MB_OK | MB_ICONERROR);
+		return FALSE;
 	}
 	else
 	{
@@ -1074,6 +1082,8 @@ BOOL InstallFixes(HWND hWnd)
 					CoUninitialize();
 				}
 			}
+			
+			return FALSE;
 		}
 		else
 		{
@@ -1132,7 +1142,7 @@ BOOL InstallFixes(HWND hWnd)
 					wcscat_s(szInstallMapsDest[i], L"World in Conflict\\Downloaded\\maps\\");
 					wcscat_s(szInstallMapsDest[i], szMapList[i].mapname);
 
-					if (!file_exists(szInstallMapsSrc[i]) || !file_exists(szInstallMapsDest[i]))
+					if (file_exists(szInstallMapsSrc[i]) && !file_exists(szInstallMapsDest[i]))
 					{
 						log_window(L"Copy: " + std::wstring(szMapList[i].mapname) + L" to " + std::wstring(szCreateMapsFolder) + L"\\");
 						CopyFileEx(szInstallMapsSrc[i], szInstallMapsDest[i], (LPPROGRESS_ROUTINE)CopyProgressRoutine, NULL, NULL, COPY_FILE_FAIL_IF_EXISTS);
