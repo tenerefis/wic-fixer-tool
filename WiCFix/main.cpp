@@ -30,10 +30,11 @@ enum
 	WIC_BT_HOOK_DLL,
 	WIC_EXE,
 	WIC_ONLINE_EXE,
+	WIC_DS_INI,
 	WICAUTOEXEC_TXT
 };
 
-const WCHAR *szWicFixFiles[8] =
+const WCHAR *szWicFixFiles[TOTAL_FIX_FILES] =
 {
 	L"dbghelp.dll",
 	L"dbghelp_old.dll",
@@ -42,6 +43,7 @@ const WCHAR *szWicFixFiles[8] =
 	L"wic_bt_hook.dll",
 	L"wic.exe",
 	L"wic_online.exe",
+	L"wic_ds.ini",
 	L"wicautoexec.txt"
 };
 
@@ -55,7 +57,7 @@ ULONGLONG ullTotalSizeOfAllMaps = 0;
 MAPSTRUCT szMapList[TOTAL_MAPS];
 
 // string buffers for created paths
-WCHAR szKnownPaths[7][MAX_PATH] = { L"", L"", L"", L"", L"" };
+WCHAR szKnownPaths[TOTAL_WIC_PATHS][MAX_PATH] = { L"", L"", L"", L"", L"" };
 WCHAR szDrive[MAX_PATH] = L"";
 WCHAR szProgramFiles[MAX_PATH] = L"";
 WCHAR szMyDocuments[MAX_PATH] = L"";
@@ -163,7 +165,7 @@ VOID				ShowProgressbar() { ShowWindow(hWndProgressBar, SW_SHOWNORMAL); ullTotal
 VOID				HideProgressbar() { ShowWindow(hWndProgressBar, SW_HIDE); ullTotalBytesTransferred = 0; };
 
 INT_PTR CALLBACK	CDKeyDialog(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 
 BOOL				CreateFormObjects(HWND);
 BOOL CALLBACK		EnumChildProc(HWND, LPARAM);
@@ -742,8 +744,9 @@ BOOL ReadMapFile()
 			ullFileSize.LowPart = lpInfo.nFileSizeLow;
 
 			ullTotalSizeOfAllMaps += ullFileSize.QuadPart;
-			i++;
 		}
+
+		i++;
 	}
 
 	return TRUE;
@@ -1093,14 +1096,14 @@ BOOL InstallFixes(HWND hWnd)
 			remove_msi_installer(hWnd, szGameDirectory);
 
 			//
-			// copy patched client .dlls to game directory, overwrite existing files
+			// copy patched client .dlls and wic_ds.ini to game directory, overwrite existing files
 			//
-			WCHAR szInstallSrc[8][MAX_PATH];
-			WCHAR szInstallDest[8][MAX_PATH];
+			WCHAR szInstallSrc[TOTAL_FIX_FILES][MAX_PATH];
+			WCHAR szInstallDest[TOTAL_FIX_FILES][MAX_PATH];
 			memset(szInstallSrc, 0, sizeof(szInstallSrc));
 			memset(szInstallDest, 0, sizeof(szInstallDest));
 
-			for (int i = DBGHELP_DLL; i <= WIC_ONLINE_EXE; i++)
+			for (int i = DBGHELP_DLL; i <= WIC_DS_INI; i++)
 			{
 				wcscpy_s(szInstallSrc[i], L"data\\");
 				wcscat_s(szInstallSrc[i], szWicFixFiles[i]);

@@ -6,7 +6,9 @@
 #define MAX_STRING_LENGTH		1024
 #define MAX_CDKEY_LENGTH		25			// includes NUL character
 
-#define TOTAL_MAPS 7
+#define TOTAL_WIC_PATHS			7
+#define TOTAL_FIX_FILES			9
+#define TOTAL_MAPS				7
 
 struct MAPSTRUCT
 {
