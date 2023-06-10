@@ -99,6 +99,7 @@ WCHAR szLblLog[MAX_LOADSTRING];
 WCHAR szMsgBoxCaptionError[MAX_LOADSTRING];
 WCHAR szMsgBoxCaptionInformation[MAX_LOADSTRING];
 WCHAR szMsgBoxCaptionQuestion[MAX_LOADSTRING];
+WCHAR szMsgBoxRequireAdmin[MAX_LOADSTRING];
 WCHAR szMsgBoxGameFolderNotFound[MAX_LOADSTRING];
 WCHAR szMsgBoxUninstallConfirmation[MAX_LOADSTRING];
 WCHAR szMsgBoxHelpPageConfirmation[MAX_LOADSTRING];
@@ -148,6 +149,7 @@ ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 
+BOOL				isAdministrator();
 BOOL				SetApplicationState(ApplicationStateEnum, DWORD);
 BOOL				LoadSettings(HWND);
 BOOL				BuildSystemPaths();
@@ -217,6 +219,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	LoadStringW(hInstance, IDS_MSGBOX_CAPTION_ERROR, szMsgBoxCaptionError, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MSGBOX_CAPTION_INFO, szMsgBoxCaptionInformation, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MSGBOX_CAPTION_QUESTION, szMsgBoxCaptionQuestion, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDS_MSGBOX_REQUIRE_ADMIN, szMsgBoxRequireAdmin, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MSGBOX_GAMEFOLDER_NOTFOUND, szMsgBoxGameFolderNotFound, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MSGBOX_UNINSTALL_CONFIRMATION, szMsgBoxUninstallConfirmation, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MSGBOX_HELPPAGE_CONFIRMATION, szMsgBoxHelpPageConfirmation, MAX_LOADSTRING);
@@ -310,6 +313,17 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	if (!hWnd)
 	{
 		return FALSE;
+	}
+
+	if (!isAdministrator())
+	{
+		MessageBox(hWnd, szMsgBoxRequireAdmin, szMsgBoxCaptionInformation, MB_OK | MB_ICONINFORMATION);
+		return FALSE;
+	}
+	else
+	{
+		wcscat_s(szTitle, L" (Administrator)");
+		SetWindowText(hWnd, szTitle);
 	}
 	
 	// center the window
@@ -528,6 +542,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
+}
+
+BOOL isAdministrator()
+{
+	BOOL bReturn = FALSE;
+	SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
+	PSID pAdministratorsGroup = NULL;
+
+	if (AllocateAndInitializeSid(&NtAuthority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0, &pAdministratorsGroup))
+	{
+		if (!CheckTokenMembership(NULL, pAdministratorsGroup, &bReturn))
+		{
+			bReturn = FALSE;
+		}
+
+		FreeSid(pAdministratorsGroup);
+		pAdministratorsGroup = NULL;
+	}
+
+	return bReturn;
 }
 
 BOOL SetApplicationState(ApplicationStateEnum iState, DWORD dwFlag)

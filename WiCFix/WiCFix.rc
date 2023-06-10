@@ -226,6 +226,8 @@ STRINGTABLE
 BEGIN
     IDS_MSGBOX_CAPTION_INFO "Information"
     IDS_MSGBOX_CAPTION_QUESTION "Question"
+    IDS_MSGBOX_REQUIRE_ADMIN 
+                            "This tool requires Administrator permissions and will now exit."
     IDS_MSGBOX_GAMEFOLDER_NOTFOUND 
                             "Please select the World in Conflict game folder."
     IDS_MSGBOX_UNINSTALL_CONFIRMATION 
@@ -244,11 +246,11 @@ BEGIN
     IDS_CDKEYDLG_BTNCANCEL  "Cancel"
     IDS_ABOUTDLG_TITLE      "About WiCFix"
     IDS_ABOUTDLG_LBLABOUT   "WiCFix, Version 1.0"
-    IDS_ABOUTDLG_LBLCOPY    "Copyright (c) 2015 - 2023"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_ABOUTDLG_LBLCOPY    "Copyright (c) 2015 - 2023"
     IDS_ABOUTDLG_BTNOK      "OK"
 END
 
