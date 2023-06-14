@@ -72,6 +72,7 @@ const WCHAR *szWicGamePatchesURL = L"https://www.massgate.org/wicfix/redirect_pa
 
 // Global Variables:
 HINSTANCE hInst;                                // current instance
+HMENU hMenu = nullptr;                          // menu bar handle
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 WCHAR szMnuFile[MAX_LOADSTRING];
@@ -308,7 +309,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	hInst = hInstance; // Store instance handle in our global variable
 
 	HWND hWnd = CreateWindowEx(WS_EX_CONTROLPARENT, szWindowClass, szTitle, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
-		CW_USEDEFAULT, 0, MAX_WIDTH, MAX_HEIGHT, nullptr, nullptr, hInstance, nullptr);
+		CW_USEDEFAULT, 0, MAX_WIDTH, MAX_HEIGHT, nullptr, hMenu, hInstance, nullptr);
 	
 	if (!hWnd)
 	{
@@ -1458,6 +1459,25 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 BOOL CreateFormObjects(HWND hWnd)
 {
+	/* menu bar */
+	hMenu = CreateMenu();
+
+	HMENU hMenuFile = CreatePopupMenu();
+	HMENU hMenuHelp = CreatePopupMenu();
+
+	AppendMenu(hMenu, MF_STRING | MF_POPUP, (UINT_PTR)hMenuFile, szMnuFile);
+	AppendMenu(hMenuFile, MF_STRING, IDM_CHANGECDKEY, szMnuItmChangeKey);
+	AppendMenu(hMenuFile, MF_SEPARATOR, 0, NULL);
+	AppendMenu(hMenuFile, MF_STRING, IDM_EXIT, szMnuItmExit);
+
+	AppendMenu(hMenu, MF_STRING | MF_POPUP, (UINT_PTR)hMenuHelp, szMnuHelp);
+	AppendMenu(hMenuHelp, MF_STRING, IDM_VIEWHELP, szMnuItmViewHelp);
+	AppendMenu(hMenuHelp, MF_STRING, IDM_UPDATE, szMnuItmUpdate);
+	AppendMenu(hMenuHelp, MF_SEPARATOR, 0, NULL);
+	AppendMenu(hMenuHelp, MF_STRING, IDM_ABOUT, szMnuItmAbout);
+
+	SetMenu(hWnd, hMenu);
+
 	/* wic dir */
 	create_static(szLblWicDir, 10, 10, 200, 20, hWnd, NULL);
 	hWndTxtWicDir = create_edit(10, 30, 380, 20, hWnd, ID_TXTWICDIR);

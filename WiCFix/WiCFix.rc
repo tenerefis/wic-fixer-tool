@@ -39,27 +39,6 @@ IDI_SMALL               ICON                    "small.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Menu
-//
-
-IDC_WICFIX MENU
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "Change CD &Key",              IDM_CHANGECDKEY
-        MENUITEM "E&xit",                       IDM_EXIT
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&View Help",                  IDM_VIEWHELP
-        MENUITEM "Check for &Updates",          IDM_UPDATE
-        MENUITEM "&About ...",                  IDM_ABOUT
-    END
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Dialog
 //
 
@@ -198,8 +177,8 @@ BEGIN
     IDS_MNUHELP             "&Help"
     IDS_MNUITMVIEWHELP      "&View Help"
     IDC_WICFIX              "WICFIX"
-    IDS_MNUITMUPDATE        "Check for &Update"
-    IDS_MNUITMABOUT         "&About"
+    IDS_MNUITMUPDATE        "Check for &Updates"
+    IDS_MNUITMABOUT         "&About ..."
 END
 
 STRINGTABLE
