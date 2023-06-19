@@ -67,6 +67,7 @@ WIC_Settings mySettings;
 
 // TODO: ShellExecute URLS, put these in the string table when MUI is implemented
 const WCHAR *szWicFixHelpURL = L"https://www.massgate.org/wicfix/redirect_help_page.php";
+const WCHAR *szWicFixDiscordURL = L"https://www.massgate.org/wicfix/redirect_discord_page.php";
 const WCHAR *szWicFixUpdateURL = L"https://www.massgate.org/wicfix/redirect_update_available.php";
 const WCHAR *szWicGamePatchesURL = L"https://www.massgate.org/wicfix/redirect_patch_download.php";
 
@@ -80,6 +81,7 @@ WCHAR szMnuItmChangeKey[MAX_LOADSTRING];
 WCHAR szMnuItmExit[MAX_LOADSTRING];
 WCHAR szMnuHelp[MAX_LOADSTRING];
 WCHAR szMnuItmViewHelp[MAX_LOADSTRING];
+WCHAR szMnuItmDiscord[MAX_LOADSTRING];
 WCHAR szMnuItmUpdate[MAX_LOADSTRING];
 WCHAR szMnuItmAbout[MAX_LOADSTRING];
 
@@ -104,6 +106,7 @@ WCHAR szMsgBoxRequireAdmin[MAX_LOADSTRING];
 WCHAR szMsgBoxGameFolderNotFound[MAX_LOADSTRING];
 WCHAR szMsgBoxUninstallConfirmation[MAX_LOADSTRING];
 WCHAR szMsgBoxHelpPageConfirmation[MAX_LOADSTRING];
+WCHAR szMsgBoxDiscordConfirmation[MAX_LOADSTRING];
 WCHAR szMsgBoxUpdateAvailable[MAX_LOADSTRING];
 WCHAR szMsgBoxNoUpdateAvailable[MAX_LOADSTRING];
 WCHAR szMsgBoxIncorrectGameVersion[MAX_LOADSTRING];
@@ -157,6 +160,7 @@ BOOL				BuildSystemPaths();
 BOOL				ReadMapFile();
 BOOL				FindGameFolder(LPWSTR);
 BOOL				HelpPage(HWND);
+BOOL				DiscordPage(HWND);
 BOOL				UpdateCheck(HWND);
 BOOL				FileOpenDialog(HWND, LPWSTR);
 BOOL				BrowseFolderDialog(HWND, LPWSTR);
@@ -198,6 +202,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	LoadStringW(hInstance, IDS_MNUITMEXIT, szMnuItmExit, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MNUHELP, szMnuHelp, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MNUITMVIEWHELP, szMnuItmViewHelp, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDS_MNUITMDISCORD, szMnuItmDiscord, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MNUITMUPDATE, szMnuItmUpdate, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MNUITMABOUT, szMnuItmAbout, MAX_LOADSTRING);
 
@@ -224,6 +229,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	LoadStringW(hInstance, IDS_MSGBOX_GAMEFOLDER_NOTFOUND, szMsgBoxGameFolderNotFound, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MSGBOX_UNINSTALL_CONFIRMATION, szMsgBoxUninstallConfirmation, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MSGBOX_HELPPAGE_CONFIRMATION, szMsgBoxHelpPageConfirmation, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDS_MSGBOX_DISCORD_CONFIRMATION, szMsgBoxDiscordConfirmation, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MSGBOX_UPDATE_AVAILABLE, szMsgBoxUpdateAvailable, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MSGBOX_NO_UPDATE_AVAILABLE, szMsgBoxNoUpdateAvailable, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MSGBOX_INCORRECT_GAME_VERSION, szMsgBoxIncorrectGameVersion, MAX_LOADSTRING);
@@ -410,6 +416,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 			case IDM_VIEWHELP:
 				HelpPage(hWnd);
+				break;
+			case IDM_DISCORD:
+				DiscordPage(hWnd);
 				break;
 			case IDM_UPDATE:
 				UpdateCheck(hWnd);
@@ -884,6 +893,22 @@ BOOL HelpPage(HWND hWnd)
 		if (SUCCEEDED(lResult))
 		{
 			ShellExecute(NULL, L"open", szWicFixHelpURL, NULL, NULL, SW_SHOWNORMAL);
+			CoUninitialize();
+		}
+	}
+
+	return TRUE;
+}
+
+BOOL DiscordPage(HWND hWnd)
+{
+	int iResult = MessageBox(hWnd, szMsgBoxDiscordConfirmation, szMsgBoxCaptionQuestion, MB_OKCANCEL | MB_ICONQUESTION);
+	if (iResult == IDOK)
+	{
+		HRESULT lResult = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+		if (SUCCEEDED(lResult))
+		{
+			ShellExecute(NULL, L"open", szWicFixDiscordURL, NULL, NULL, SW_SHOWNORMAL);
 			CoUninitialize();
 		}
 	}
@@ -1472,6 +1497,7 @@ BOOL CreateFormObjects(HWND hWnd)
 
 	AppendMenu(hMenu, MF_STRING | MF_POPUP, (UINT_PTR)hMenuHelp, szMnuHelp);
 	AppendMenu(hMenuHelp, MF_STRING, IDM_VIEWHELP, szMnuItmViewHelp);
+	AppendMenu(hMenuHelp, MF_STRING, IDM_DISCORD, szMnuItmDiscord);
 	AppendMenu(hMenuHelp, MF_STRING, IDM_UPDATE, szMnuItmUpdate);
 	AppendMenu(hMenuHelp, MF_SEPARATOR, 0, NULL);
 	AppendMenu(hMenuHelp, MF_STRING, IDM_ABOUT, szMnuItmAbout);

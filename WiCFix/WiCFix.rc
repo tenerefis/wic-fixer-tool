@@ -177,12 +177,13 @@ BEGIN
     IDS_MNUHELP             "&Help"
     IDS_MNUITMVIEWHELP      "&View Help"
     IDC_WICFIX              "WICFIX"
+    IDS_MNUITMDISCORD       "&Discord"
     IDS_MNUITMUPDATE        "Check for &Updates"
-    IDS_MNUITMABOUT         "&About ..."
 END
 
 STRINGTABLE
 BEGIN
+    IDS_MNUITMABOUT         "&About ..."
     IDS_LBLWICDIR           "World in Conflict installation directory:"
     IDS_BTNBROWSE           "Browse"
     IDS_FOLDERDLG_TITLE     "Select the World in Conflict directory"
@@ -198,20 +199,22 @@ BEGIN
     IDS_BTNINSTALL          "Install"
     IDS_BTNUNINSTALL        "Uninstall"
     IDS_LBLLOG              "Log:"
-    IDS_MSGBOX_CAPTION_ERROR "Error"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_MSGBOX_CAPTION_ERROR "Error"
     IDS_MSGBOX_CAPTION_INFO "Information"
     IDS_MSGBOX_CAPTION_QUESTION "Question"
     IDS_MSGBOX_REQUIRE_ADMIN 
-                            "This tool requires Administrator permissions and will now exit."
+                            "This tool requires Administrator permissions.\n\nRe-run the tool as an Administrator"
     IDS_MSGBOX_GAMEFOLDER_NOTFOUND 
                             "Please select the World in Conflict game folder."
     IDS_MSGBOX_UNINSTALL_CONFIRMATION 
                             "Are you sure you want to remove the multiplayer fix?"
     IDS_MSGBOX_HELPPAGE_CONFIRMATION 
+                            "This will take you to a webpage, would you like to continue?"
+    IDS_MSGBOX_DISCORD_CONFIRMATION 
                             "This will take you to a webpage, would you like to continue?"
     IDS_MSGBOX_UPDATE_AVAILABLE 
                             "An update is available\n\nVisit website to download the update?"
@@ -223,12 +226,12 @@ BEGIN
     IDS_CDKEYDLG_TITLE      "Change CD key"
     IDS_CDKEYDLG_BTNSAVE    "Save"
     IDS_CDKEYDLG_BTNCANCEL  "Cancel"
-    IDS_ABOUTDLG_TITLE      "About WiCFix"
-    IDS_ABOUTDLG_LBLABOUT   "WiCFix, Version 1.0"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_ABOUTDLG_TITLE      "About WiCFix"
+    IDS_ABOUTDLG_LBLABOUT   "WiCFix, Version 1.0"
     IDS_ABOUTDLG_LBLCOPY    "Copyright (c) 2015 - 2023"
     IDS_ABOUTDLG_BTNOK      "OK"
 END
