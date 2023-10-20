@@ -61,6 +61,12 @@ BOOL wic_write_cdkey(LPCWSTR pszCDkey);
 BOOL wic_registry_installexepath(LPWSTR pszPath);
 BOOL wic_registry_installpath(LPWSTR pszPath);
 BOOL wic_registry_version(LPWSTR pszPath);
+BOOL wic_registry_complete();
+
+// gog registry install info
+BOOL gog_registry_installexepath(LPWSTR pszPath);
+BOOL gog_registry_installpath(LPWSTR pszPath);
+BOOL gog_registry_language(LPWSTR pszLanguageCode, LPWSTR pszLocalized);
 
 // wic version check
 BOOL wic_version_1011(LPCWSTR pszPath);

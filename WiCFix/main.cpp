@@ -57,7 +57,7 @@ ULONGLONG ullTotalSizeOfAllMaps = 0;
 MAPSTRUCT szMapList[TOTAL_MAPS];
 
 // string buffers for created paths
-WCHAR szKnownPaths[TOTAL_WIC_PATHS][MAX_PATH] = { L"", L"", L"", L"", L"" };
+WCHAR szKnownPaths[TOTAL_WIC_PATHS][MAX_PATH] = { L"", L"", L"", L"", L"", L"", L"" };
 WCHAR szDrive[MAX_PATH] = L"";
 WCHAR szProgramFiles[MAX_PATH] = L"";
 WCHAR szMyDocuments[MAX_PATH] = L"";
@@ -804,9 +804,7 @@ BOOL FindGameFolder(LPWSTR pszPath)
 	WCHAR szVersion[MAX_STRING_LENGTH] = L"";
 
 	// if the installpath is not in the registry, search known paths
-	if (!wic_registry_installexepath(szInstallExePath)
-		|| !wic_registry_installpath(szInstallPath)
-		|| !wic_registry_version(szVersion))
+	if ((!wic_registry_installexepath(szInstallExePath) || !wic_registry_installpath(szInstallPath) || !wic_registry_version(szVersion)) && !gog_registry_installpath(szInstallPath))
 	{
 		log_window(L"Installation path not found in registry, searching known paths.");
 
@@ -1250,6 +1248,25 @@ BOOL InstallFixes(HWND hWnd)
 			//
 			// fix for wiced and modkit installers
 			//
+			if (!wic_registry_complete())
+			{
+				WCHAR szLanguageCode[MAX_STRING_LENGTH] = L"";
+				WCHAR szLocalized[MAX_STRING_LENGTH] = L"";
+
+				write_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"InstallExePath", szInstallExePath);
+				write_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"InstallPath", szInstallPath);
+
+				if (gog_registry_language(szLanguageCode, szLocalized))
+				{
+					write_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"LanguageCode", szLanguageCode);
+					write_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"Localized", szLocalized);
+				}
+
+				write_reg_dword(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"OnlineOnly", 0);
+				//write_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"SovietAssault", szSovietAssault);
+				//write_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"Version", L"1.0.1.1");
+			}
+
 			if (!wic_registry_version(szVersion))
 			{
 				write_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"Version", L"1.0.1.1");

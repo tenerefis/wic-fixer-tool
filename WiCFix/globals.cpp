@@ -445,6 +445,63 @@ BOOL wic_registry_version(LPWSTR pszPath)
 	return (wcslen(pszPath) > 0);
 }
 
+BOOL wic_registry_complete()
+{
+	WCHAR szInstallExePath[MAX_STRING_LENGTH] = L"";
+	WCHAR szInstallPath[MAX_STRING_LENGTH] = L"";
+	WCHAR szLanguageCode[MAX_STRING_LENGTH] = L"";
+	WCHAR szLocalized[MAX_STRING_LENGTH] = L"";
+	WCHAR szVersion[MAX_STRING_LENGTH] = L"";
+	
+	return read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"InstallExePath", szInstallExePath)
+		&& read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"InstallPath", szInstallPath)
+		&& read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"LanguageCode", szLanguageCode)
+		&& read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"Localized", szLocalized)
+		//&& read_reg_dword(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"OnlineOnly")
+		//&& read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"SovietAssault", szSovietAssault)
+		&& read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"Version", szVersion);
+}
+
+BOOL gog_registry_installexepath(LPWSTR pszPath)
+{
+	read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\GOG.com\\Games\\1438332414", L"EXE", pszPath);
+	return (wcslen(pszPath) > 0);
+}
+
+BOOL gog_registry_installpath(LPWSTR pszPath)
+{
+	read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\GOG.com\\Games\\1438332414", L"WORKINGDIR", pszPath);
+	return (wcslen(pszPath) > 0);
+}
+
+BOOL gog_registry_language(LPWSTR pszLanguageCode, LPWSTR pszLocalized)
+{
+	WCHAR szLanguage[MAX_STRING_LENGTH] = L"";
+
+	read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\GOG.com\\Games\\1438332414", L"LANGUAGE", szLanguage);
+
+	if (wcslen(szLanguage) > 0)
+	{
+		if (wcsstr(szLanguage, L"english"))
+			wcscpy_s(pszLanguageCode, MAX_STRING_LENGTH, L"EN");
+		else if (wcsstr(szLanguage, L"french"))
+			wcscpy_s(pszLanguageCode, MAX_STRING_LENGTH, L"FR");
+		else if (wcsstr(szLanguage, L"german"))
+			wcscpy_s(pszLanguageCode, MAX_STRING_LENGTH, L"DE");
+		else if (wcsstr(szLanguage, L"italian"))
+			wcscpy_s(pszLanguageCode, MAX_STRING_LENGTH, L"IT");
+		else if (wcsstr(szLanguage, L"spanish"))
+			wcscpy_s(pszLanguageCode, MAX_STRING_LENGTH, L"ES");
+		else
+			wcscpy_s(pszLanguageCode, MAX_STRING_LENGTH, L"EN");
+
+		wcscpy_s(pszLocalized, MAX_STRING_LENGTH, szLanguage);
+		pszLocalized[0] = toupper(pszLocalized[0]);
+	}
+
+	return ((wcslen(pszLanguageCode)) > 0 && (wcslen(pszLocalized) > 0));
+}
+
 BOOL wic_version_1011(LPCWSTR pszPath)
 {
 	char readBuffer[59] = "";
