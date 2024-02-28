@@ -101,7 +101,7 @@ BOOL update_available()
 	if (!http.Init("http://www.massgate.org/wicfix/version.php"))
 		return FALSE;
 
-	if (!http.SendGetRequest())
+	if (!http.SendGETRequest())
 	{
 		log_window(L"Could not contact server");
 		return FALSE;
@@ -455,8 +455,8 @@ BOOL wic_registry_complete()
 	
 	return read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"InstallExePath", szInstallExePath)
 		&& read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"InstallPath", szInstallPath)
-		&& read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"LanguageCode", szLanguageCode)
-		&& read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"Localized", szLocalized)
+		//&& read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"LanguageCode", szLanguageCode)
+		//&& read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"Localized", szLocalized)
 		//&& read_reg_dword(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"OnlineOnly")
 		//&& read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"SovietAssault", szSovietAssault)
 		&& read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"Version", szVersion);
@@ -470,6 +470,7 @@ BOOL gog_registry_installexepath(LPWSTR pszPath)
 
 BOOL gog_registry_installpath(LPWSTR pszPath)
 {
+	// EXE, PATH, WORKINGDIR
 	read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\GOG.com\\Games\\1438332414", L"WORKINGDIR", pszPath);
 	return (wcslen(pszPath) > 0);
 }

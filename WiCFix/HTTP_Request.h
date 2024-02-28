@@ -27,7 +27,7 @@ public:
 	~HTTP_Request();
 
 	bool Init(const char *pszURL);
-	bool SendGetRequest();
+	bool SendGETRequest();
 	bool Response(char *pszData, unsigned int uMaxLength);
 };
 

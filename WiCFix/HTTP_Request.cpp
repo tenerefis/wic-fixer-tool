@@ -85,7 +85,7 @@ bool HTTP_Request::Init(const char *pszURL)
 	return true;
 }
 
-bool HTTP_Request::SendGetRequest()
+bool HTTP_Request::SendGETRequest()
 {
 	this->m_Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
