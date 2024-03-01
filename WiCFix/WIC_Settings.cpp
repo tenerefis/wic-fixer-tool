@@ -15,6 +15,7 @@ void WIC_Settings::Clear()
 	memset(this->myInstallExePath, 0, sizeof(this->myInstallExePath));
 	memset(this->myInstallPath, 0, sizeof(this->myInstallPath));
 	memset(this->myVersion, 0, sizeof(this->myVersion));
+	memset(this->myWiCFixVersion, 0, sizeof(this->myWiCFixVersion));
 	this->wicInstallDirFound = false;
 	this->registryFixed = false;
 	this->mpFixInstalled = false;
@@ -34,6 +35,7 @@ void WIC_Settings::Load()
 	read_reg_wstring(HKEY_CURRENT_USER, this->m_RegistryKey, L"myInstallExePath", this->myInstallExePath);
 	read_reg_wstring(HKEY_CURRENT_USER, this->m_RegistryKey, L"myInstallPath", this->myInstallPath);
 	read_reg_wstring(HKEY_CURRENT_USER, this->m_RegistryKey, L"myVersion", this->myVersion);
+	read_reg_wstring(HKEY_CURRENT_USER, this->m_RegistryKey, L"myWiCFixVersion", this->myWiCFixVersion);
 	this->wicInstallDirFound = read_reg_dword(HKEY_CURRENT_USER, this->m_RegistryKey, L"wicInstallDirFound");
 	this->registryFixed = read_reg_dword(HKEY_CURRENT_USER, this->m_RegistryKey, L"registryFixed");
 	this->mpFixInstalled = read_reg_dword(HKEY_CURRENT_USER, this->m_RegistryKey, L"mpFixInstalled");
@@ -47,6 +49,7 @@ void WIC_Settings::Save()
 	write_reg_wstring(HKEY_CURRENT_USER, this->m_RegistryKey, L"myInstallExePath", this->myInstallExePath);
 	write_reg_wstring(HKEY_CURRENT_USER, this->m_RegistryKey, L"myInstallPath", this->myInstallPath);
 	write_reg_wstring(HKEY_CURRENT_USER, this->m_RegistryKey, L"myVersion", this->myVersion);
+	write_reg_wstring(HKEY_CURRENT_USER, this->m_RegistryKey, L"myWiCFixVersion", this->myWiCFixVersion);
 	write_reg_dword(HKEY_CURRENT_USER, this->m_RegistryKey, L"wicInstallDirFound", this->wicInstallDirFound);
 	write_reg_dword(HKEY_CURRENT_USER, this->m_RegistryKey, L"registryFixed", this->registryFixed);
 	write_reg_dword(HKEY_CURRENT_USER, this->m_RegistryKey, L"mpFixInstalled", this->mpFixInstalled);

@@ -47,6 +47,7 @@ const WCHAR *szWicFixFiles[TOTAL_FIX_FILES] =
 	L"wicautoexec.txt"
 };
 
+WCHAR szProductVersion[MAX_STRING_LENGTH] = L"";
 BOOL bMapTxtFilePresent = FALSE;
 BOOL bWicAutoexecPresent = FALSE;
 ULONGLONG ullTotalBytesTransferred = 0;
@@ -156,6 +157,8 @@ LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 BOOL				isAdministrator();
 BOOL				SetApplicationState(ApplicationStateEnum, DWORD);
 BOOL				LoadSettings(HWND);
+BOOL				AppendVersionInformation();
+BOOL				isNewerVersion();
 BOOL				BuildSystemPaths();
 BOOL				ReadMapFile();
 BOOL				FindGameFolder(LPWSTR);
@@ -398,6 +401,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				log_window(L"Multiplayer Fix has been applied.");
 				SetWindowText(hWndTxtWicDir, mySettings.myInstallPath);
 				SetApplicationState(INSTALLED, dwFlag);
+				
+				if (isNewerVersion())
+				{
+					log_window(L"Found: " + std::wstring(mySettings.myInstallPath));
+					SetApplicationState(READY, 0);
+					EnableWindow(hWndTxtWicDir, FALSE);
+					EnableWindow(hWndBtnBrowse, FALSE);
+					EnableWindow(hWndBtnUnInstall, TRUE);
+					log_window(L"Ready for update.");
+				}
 			}
 
 			return 0;
@@ -723,6 +736,9 @@ BOOL SetApplicationState(ApplicationStateEnum iState, DWORD dwFlag)
 
 BOOL LoadSettings(HWND hWnd)
 {
+	get_product_version(szProductVersion);
+	AppendVersionInformation();
+
 	if (file_exists(L"data\\maps.txt"))
 		bMapTxtFilePresent = TRUE;
 
@@ -734,6 +750,37 @@ BOOL LoadSettings(HWND hWnd)
 	mySettings.Load();
 	SetApplicationState(DEFAULT, 0);
 	return TRUE;
+}
+
+BOOL AppendVersionInformation()
+{
+	WCHAR szMajorMinor[MAX_STRING_LENGTH] = L"";
+
+	wcsncpy_s(szMajorMinor, szProductVersion, 3);
+
+	wcscat_s(szTitle, L" v");
+	wcscat_s(szTitle, szMajorMinor);
+
+	wcscat_s(szAboutDlgTitle, L" v");
+	wcscat_s(szAboutDlgTitle, szMajorMinor);
+
+	wcscat_s(szAboutDlgLblAbout, L", Version ");
+	wcscat_s(szAboutDlgLblAbout, szMajorMinor);
+
+	return TRUE;
+}
+
+BOOL isNewerVersion()
+{
+	BOOL bReturn = FALSE;
+
+	std::wstring szInstalledVersion(mySettings.myWiCFixVersion);
+	std::wstring szCurrentVersion(szProductVersion);
+
+	if (szInstalledVersion < szCurrentVersion)
+		bReturn = TRUE;
+
+	return bReturn;
 }
 
 BOOL BuildSystemPaths()
@@ -1295,6 +1342,7 @@ BOOL InstallFixes(HWND hWnd)
 			//
 			// save mySettings configuration
 			//
+			wcscpy_s(mySettings.myWiCFixVersion, szProductVersion);
 			wcscpy_s(mySettings.myInstallExePath, szInstallExePath);
 			wcscpy_s(mySettings.myInstallPath, szInstallPath);
 			wcscpy_s(mySettings.myVersion, szVersion);

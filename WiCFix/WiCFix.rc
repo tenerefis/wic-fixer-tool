@@ -130,8 +130,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,0
- PRODUCTVERSION 1,0,0,0
+ FILEVERSION 1,1,0,0
+ PRODUCTVERSION 1,1,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -148,12 +148,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "WiCFix.exe"
             VALUE "FileDescription", "World in Conflict Repair Utility"
-            VALUE "FileVersion", "1.0.0.0"
+            VALUE "FileVersion", "1.1.0.0"
             VALUE "InternalName", "WiCFix.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2015 - 2023"
+            VALUE "LegalCopyright", "Copyright (C) 2015 - 2024"
             VALUE "OriginalFilename", "WiCFix.exe"
             VALUE "ProductName", "WiCFix"
-            VALUE "ProductVersion", "1.0.0.0"
+            VALUE "ProductVersion", "1.1.0.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -170,7 +170,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_APP_TITLE           "World in Conflict Repair Utility v1.0"
+    IDS_APP_TITLE           "World in Conflict Repair Utility"
     IDS_MNUFILE             "&File"
     IDS_MNUITMCHANGEKEY     "Change CD &Key"
     IDS_MNUITMEXIT          "E&xit"
@@ -231,8 +231,8 @@ END
 STRINGTABLE
 BEGIN
     IDS_ABOUTDLG_TITLE      "About WiCFix"
-    IDS_ABOUTDLG_LBLABOUT   "WiCFix, Version 1.0"
-    IDS_ABOUTDLG_LBLCOPY    "Copyright (c) 2015 - 2023"
+    IDS_ABOUTDLG_LBLABOUT   "WiCFix"
+    IDS_ABOUTDLG_LBLCOPY    "Copyright (c) 2015 - 2024"
     IDS_ABOUTDLG_BTNOK      "OK"
 END
 

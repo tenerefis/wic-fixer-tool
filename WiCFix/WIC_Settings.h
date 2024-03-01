@@ -12,6 +12,7 @@ public:
 	wchar_t myInstallExePath[MAX_STRING_LENGTH];
 	wchar_t myInstallPath[MAX_STRING_LENGTH];
 	wchar_t myVersion[MAX_STRING_LENGTH];
+	wchar_t myWiCFixVersion[MAX_STRING_LENGTH];
 	bool wicInstallDirFound;
 	bool registryFixed;
 	bool mpFixInstalled;
