@@ -1264,8 +1264,17 @@ BOOL InstallFixes(HWND hWnd)
 			//
 			// copy and open wicautoexec.txt
 			//
+			WCHAR szCreateMyDocsWiCFolder[MAX_PATH];
+			memset(szCreateMyDocsWiCFolder, 0, sizeof(szCreateMyDocsWiCFolder));
+
+			wcscpy_s(szCreateMyDocsWiCFolder, szMyDocuments);
+			wcscat_s(szCreateMyDocsWiCFolder, L"World in Conflict");
+
 			if (SendMessage(hWndChkInstallTxt, BM_GETCHECK, 0, 0) == BST_CHECKED)
 			{
+				if (!folder_exists(szCreateMyDocsWiCFolder))
+					folder_create(szCreateMyDocsWiCFolder);
+
 				wcscpy_s(szInstallSrc[WICAUTOEXEC_TXT], L"data\\");
 				wcscat_s(szInstallSrc[WICAUTOEXEC_TXT], szWicFixFiles[WICAUTOEXEC_TXT]);
 
