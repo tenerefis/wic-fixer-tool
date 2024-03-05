@@ -551,6 +551,44 @@ BOOL wic_ds_version_1011(LPCWSTR pszPath)
 	return TRUE;
 }
 
+BOOL strip_zone_identifier(LPCWSTR pszPath)
+{
+	// removes the zone identifier from the file, i.e. click unblock button in the file property sheet
+
+	HRESULT lResult = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+
+	if (SUCCEEDED(lResult))
+	{
+		IPersistFile* pFile = NULL;
+		lResult = CoCreateInstance(CLSID_PersistentZoneIdentifier, NULL, CLSCTX_INPROC_SERVER, IID_IPersistFile, (void**)&pFile);
+
+		if (SUCCEEDED(lResult))
+		{
+			IZoneIdentifier* pZoneId = NULL;
+			lResult = CoCreateInstance(CLSID_PersistentZoneIdentifier, NULL, CLSCTX_INPROC_SERVER, IID_IZoneIdentifier, (void**)&pZoneId);
+
+			if (SUCCEEDED(lResult))
+			{
+				lResult = pFile->QueryInterface(__uuidof(IZoneIdentifier), (void**)&pZoneId);
+
+				if (SUCCEEDED(lResult))
+				{
+					pZoneId->Remove();
+					pFile->Save(pszPath, TRUE);
+				}
+
+				pZoneId->Release();
+			}
+
+			pFile->Release();
+		}
+
+		CoUninitialize();
+	}
+
+	return TRUE;
+}
+
 BOOL remove_msi_installer(HWND hWnd, LPCWSTR pszPath)
 {
 	WCHAR szDisplayName[MAX_STRING_LENGTH] = L"";

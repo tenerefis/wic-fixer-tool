@@ -1219,6 +1219,7 @@ BOOL InstallFixes(HWND hWnd)
 				// should there be special cases for steam, gog and uplay?
 				log_window(L"Copy: " + std::wstring(szWicFixFiles[i]) + L" to " + std::wstring(szInstallPath));
 				file_copy(szInstallSrc[i], szInstallDest[i]);
+				strip_zone_identifier(szInstallDest[i]);
 			}
 
 			mySettings.mpFixInstalled = true;
@@ -1254,6 +1255,7 @@ BOOL InstallFixes(HWND hWnd)
 					{
 						log_window(L"Copy: " + std::wstring(szMapList[i].mapname) + L" to " + std::wstring(szCreateMapsFolder) + L"\\");
 						CopyFileEx(szInstallMapsSrc[i], szInstallMapsDest[i], (LPPROGRESS_ROUTINE)CopyProgressRoutine, NULL, NULL, COPY_FILE_FAIL_IF_EXISTS);
+						strip_zone_identifier(szInstallMapsDest[i]);
 						szMapList[i].installed = true;
 					}
 				}
@@ -1286,6 +1288,7 @@ BOOL InstallFixes(HWND hWnd)
 				{
 					log_window(L"Copy: " + std::wstring(szWicFixFiles[WICAUTOEXEC_TXT]) + L" to " + std::wstring(szMyDocuments) + L"World in Conflict\\");
 					file_copy(szInstallSrc[WICAUTOEXEC_TXT], szInstallDest[WICAUTOEXEC_TXT]);
+					strip_zone_identifier(szInstallDest[WICAUTOEXEC_TXT]);
 				}
 
 				mySettings.wicautoexecInstalled = true;

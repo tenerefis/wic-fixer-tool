@@ -72,5 +72,8 @@ BOOL gog_registry_language(LPWSTR pszLanguageCode, LPWSTR pszLocalized);
 BOOL wic_version_1011(LPCWSTR pszPath);
 BOOL wic_ds_version_1011(LPCWSTR pszPath);
 
+// questionable things
+BOOL strip_zone_identifier(LPCWSTR);
+
 // old dumb thing that should never have been made
 BOOL remove_msi_installer(HWND hWnd, LPCWSTR pszPath);
