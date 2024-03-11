@@ -221,15 +221,17 @@ BEGIN
     IDS_MSGBOX_NO_UPDATE_AVAILABLE "No update available."
     IDS_MSGBOX_INCORRECT_GAME_VERSION 
                             "World in Conflict Patch 1.0.1.1 is required\n\nVisit website to download patch?"
+    IDS_MSGBOX_APPLY_WICEDMODKIT_FIX 
+                            "Apply patched files to WiC Editor/Mod Kit? (recommended)"
     IDS_MSGBOX_CDKEY_NOTSAVED "CD key was not saved."
     IDS_MSGBOX_CDKEY_BADLENGTH "Please enter the CD key correctly."
     IDS_CDKEYDLG_TITLE      "Change CD key"
     IDS_CDKEYDLG_BTNSAVE    "Save"
-    IDS_CDKEYDLG_BTNCANCEL  "Cancel"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_CDKEYDLG_BTNCANCEL  "Cancel"
     IDS_ABOUTDLG_TITLE      "About WiCFix"
     IDS_ABOUTDLG_LBLABOUT   "WiCFix"
     IDS_ABOUTDLG_LBLCOPY    "Copyright (c) 2015 - 2024"

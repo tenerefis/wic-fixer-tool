@@ -462,6 +462,30 @@ BOOL wic_registry_complete()
 		&& read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict", L"Version", szVersion);
 }
 
+BOOL wiced_registry_installpath(LPWSTR pszPath)
+{
+	read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World In Conflict Editor", L"InstallPath", pszPath);
+	return (wcslen(pszPath) > 0);
+}
+
+BOOL wiced_registry_version(LPWSTR pszPath)
+{
+	read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World In Conflict Editor", L"Version", pszPath);
+	return (wcslen(pszPath) > 0);
+}
+
+BOOL modkit_registry_installpath(LPWSTR pszPath)
+{
+	read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict ModKit", L"InstallPath", pszPath);
+	return (wcslen(pszPath) > 0);
+}
+
+BOOL modkit_registry_version(LPWSTR pszPath)
+{
+	read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Massive Entertainment AB\\World in Conflict ModKit", L"Version", pszPath);
+	return (wcslen(pszPath) > 0);
+}
+
 BOOL gog_registry_installexepath(LPWSTR pszPath)
 {
 	read_reg_wstring(HKEY_LOCAL_MACHINE, L"SOFTWARE\\GOG.com\\Games\\1438332414", L"EXE", pszPath);

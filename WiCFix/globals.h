@@ -63,6 +63,12 @@ BOOL wic_registry_installpath(LPWSTR pszPath);
 BOOL wic_registry_version(LPWSTR pszPath);
 BOOL wic_registry_complete();
 
+// wiced and modkit install info
+BOOL wiced_registry_installpath(LPWSTR pszPath);
+BOOL wiced_registry_version(LPWSTR pszPath);
+BOOL modkit_registry_installpath(LPWSTR pszPath);
+BOOL modkit_registry_version(LPWSTR pszPath);
+
 // gog registry install info
 BOOL gog_registry_installexepath(LPWSTR pszPath);
 BOOL gog_registry_installpath(LPWSTR pszPath);

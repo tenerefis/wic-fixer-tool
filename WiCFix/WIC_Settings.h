@@ -12,6 +12,10 @@ public:
 	wchar_t myInstallExePath[MAX_STRING_LENGTH];
 	wchar_t myInstallPath[MAX_STRING_LENGTH];
 	wchar_t myVersion[MAX_STRING_LENGTH];
+	wchar_t myWiCEdInstallPath[MAX_STRING_LENGTH];
+	wchar_t myWiCEdVersion[MAX_STRING_LENGTH];
+	wchar_t myWiCModKitInstallPath[MAX_STRING_LENGTH];
+	wchar_t myWiCModKitVersion[MAX_STRING_LENGTH];
 	wchar_t myWiCFixVersion[MAX_STRING_LENGTH];
 	bool wicInstallDirFound;
 	bool registryFixed;
@@ -19,6 +23,8 @@ public:
 	bool mapsInstalled;
 	bool wicautoexecInstalled;
 	bool myDX10FlagSet;
+	bool myWiCEdInstalled;
+	bool myWiCModKitInstalled;
 
 private:
 	void Clear();

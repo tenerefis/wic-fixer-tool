@@ -50,6 +50,8 @@ const WCHAR *szWicFixFiles[TOTAL_FIX_FILES] =
 WCHAR szProductVersion[MAX_STRING_LENGTH] = L"";
 BOOL bMapTxtFilePresent = FALSE;
 BOOL bWicAutoexecPresent = FALSE;
+BOOL bWiCEdPresent = FALSE;
+BOOL bModKitPresent = FALSE;
 ULONGLONG ullTotalBytesTransferred = 0;
 ULONGLONG ullLastBytesTransferred = 0;
 ULONGLONG ullTotalSizeOfAllMaps = 0;
@@ -111,6 +113,7 @@ WCHAR szMsgBoxDiscordConfirmation[MAX_LOADSTRING];
 WCHAR szMsgBoxUpdateAvailable[MAX_LOADSTRING];
 WCHAR szMsgBoxNoUpdateAvailable[MAX_LOADSTRING];
 WCHAR szMsgBoxIncorrectGameVersion[MAX_LOADSTRING];
+WCHAR szMsgBoxApplyFixToWiCEdAndModKit[MAX_LOADSTRING];
 WCHAR szMsgBoxCDKeyNotSaved[MAX_LOADSTRING];
 WCHAR szMsgBoxCDKeyBadLength[MAX_LOADSTRING];
 
@@ -162,12 +165,14 @@ BOOL				isNewerVersion();
 BOOL				BuildSystemPaths();
 BOOL				ReadMapFile();
 BOOL				FindGameFolder(LPWSTR);
+BOOL				DetectWiCEd();
+BOOL				DetectModKit();
 BOOL				HelpPage(HWND);
 BOOL				DiscordPage(HWND);
 BOOL				UpdateCheck(HWND);
 BOOL				FileOpenDialog(HWND, LPWSTR);
 BOOL				BrowseFolderDialog(HWND, LPWSTR);
-BOOL				InstallFixes(HWND);
+BOOL				InstallFixes(HWND, BOOL);
 BOOL				UninstallFixes();
 
 DWORD CALLBACK		CopyProgressRoutine(LARGE_INTEGER, LARGE_INTEGER, LARGE_INTEGER, LARGE_INTEGER, DWORD, DWORD, HANDLE, HANDLE, LPVOID);
@@ -236,6 +241,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	LoadStringW(hInstance, IDS_MSGBOX_UPDATE_AVAILABLE, szMsgBoxUpdateAvailable, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MSGBOX_NO_UPDATE_AVAILABLE, szMsgBoxNoUpdateAvailable, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MSGBOX_INCORRECT_GAME_VERSION, szMsgBoxIncorrectGameVersion, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDS_MSGBOX_APPLY_WICEDMODKIT_FIX, szMsgBoxApplyFixToWiCEdAndModKit, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MSGBOX_CDKEY_NOTSAVED, szMsgBoxCDKeyNotSaved, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MSGBOX_CDKEY_BADLENGTH, szMsgBoxCDKeyBadLength, MAX_LOADSTRING);
 
@@ -466,10 +472,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 			case ID_BTNINSTALL:
 			{
+				BOOL bApplyWiCEdModKitFix = FALSE;
 				SetApplicationState(WORKING, 0);
 				ShowProgressbar();
 
-				if (!InstallFixes(hWnd))
+				if (bWiCEdPresent || bModKitPresent)
+				{
+					int iResult = MessageBox(hWnd, szMsgBoxApplyFixToWiCEdAndModKit, szMsgBoxCaptionQuestion, MB_YESNO | MB_ICONQUESTION);
+					if (iResult == IDYES)
+						bApplyWiCEdModKitFix = TRUE;
+				}
+
+				if (!InstallFixes(hWnd, bApplyWiCEdModKitFix))
 				{
 					HideProgressbar();
 					SetApplicationState(READY, 0);
@@ -745,6 +759,12 @@ BOOL LoadSettings(HWND hWnd)
 	if (file_exists(L"data\\wicautoexec.txt"))
 		bWicAutoexecPresent = TRUE;
 
+	if (DetectWiCEd())
+		bWiCEdPresent = TRUE;
+
+	if (DetectModKit())
+		bModKitPresent = TRUE;
+
 	BuildSystemPaths();
 	ReadMapFile();
 	mySettings.Load();
@@ -816,6 +836,8 @@ BOOL ReadMapFile()
 	std::wstring line;
 
 	int i = 0;
+	memset(szMapList, 0, sizeof(szMapList));
+
 	while (std::getline(mapFile, line))
 	{
 		if (i < TOTAL_MAPS)
@@ -923,6 +945,56 @@ BOOL FindGameFolder(LPWSTR pszPath)
 		{
 			wcscpy_s(pszPath, MAX_PATH, szInstallPath);
 			bFound = TRUE;
+		}
+	}
+
+	return bFound;
+}
+
+BOOL DetectWiCEd()
+{
+	BOOL bFound = FALSE;
+	WCHAR szWiCEdExe[MAX_PATH] = L"";
+	WCHAR szWiCEdDirectory[MAX_PATH] = L"";
+	WCHAR szWiCEdVersion[MAX_STRING_LENGTH] = L"";
+
+	if (wiced_registry_installpath(szWiCEdDirectory))
+	{
+		wcscpy_s(szWiCEdExe, szWiCEdDirectory);
+		wcscat_s(szWiCEdExe, L"WICEd.exe");
+
+		if (wiced_registry_version(szWiCEdVersion))
+		{
+			if (wcsstr(szWiCEdVersion, L"1.2.1.1"))
+			{
+				if (file_exists(szWiCEdExe))
+					bFound = TRUE;
+			}
+		}
+	}
+
+	return bFound;
+}
+
+BOOL DetectModKit()
+{
+	BOOL bFound = FALSE;
+	WCHAR szWiCModKitExe[MAX_PATH] = L"";
+	WCHAR szWiCModKitDirectory[MAX_PATH] = L"";
+	WCHAR szWiCModKitVersion[MAX_STRING_LENGTH] = L"";
+
+	if (modkit_registry_installpath(szWiCModKitDirectory))
+	{
+		wcscpy_s(szWiCModKitExe, szWiCModKitDirectory);
+		wcscat_s(szWiCModKitExe, L"WICEd.exe");
+
+		if (modkit_registry_version(szWiCModKitVersion))
+		{
+			if (wcsstr(szWiCModKitVersion, L"1.4.0.0"))
+			{
+				if (file_exists(szWiCModKitExe))
+					bFound = TRUE;
+			}
 		}
 	}
 
@@ -1158,7 +1230,7 @@ BOOL BrowseFolderDialog(HWND hWnd, LPWSTR pszPath)
 	return bFound;
 }
 
-BOOL InstallFixes(HWND hWnd)
+BOOL InstallFixes(HWND hWnd, BOOL bApplyWiCEdModKitFix)
 {
 	WCHAR szGameDirectory[MAX_PATH] = L"";
 	GetWindowText(hWndTxtWicDir, szGameDirectory, MAX_PATH);
@@ -1352,6 +1424,60 @@ BOOL InstallFixes(HWND hWnd)
 			file_delete(szServerFilters);
 
 			//
+			// copy patched client .dlls to wiced and/or modkit directory, overwrite existing files
+			//
+			if (bApplyWiCEdModKitFix)
+			{
+				if (bWiCEdPresent)
+				{
+					WCHAR szWiCEdDirectory[MAX_PATH] = L"";
+					WCHAR szWiCEdVersion[MAX_STRING_LENGTH] = L"";
+					WCHAR szWiCEdDest[5][MAX_PATH];
+					memset(szWiCEdDest, 0, sizeof(szWiCEdDest));
+
+					wiced_registry_installpath(szWiCEdDirectory);
+					wiced_registry_version(szWiCEdVersion);
+
+					for (int i = DBGHELP_DLL; i <= WIC_BT_HOOK_DLL; i++)
+					{
+						wcscpy_s(szWiCEdDest[i], szWiCEdDirectory);
+						wcscat_s(szWiCEdDest[i], szWicFixFiles[i]);
+
+						file_copy(szInstallSrc[i], szWiCEdDest[i]);
+						strip_zone_identifier(szWiCEdDest[i]);
+					}
+
+					wcscpy_s(mySettings.myWiCEdInstallPath, szWiCEdDirectory);
+					wcscpy_s(mySettings.myWiCEdVersion, szWiCEdVersion);
+					mySettings.myWiCEdInstalled = true;
+				}
+
+				if (bModKitPresent)
+				{
+					WCHAR szWiCModKitDirectory[MAX_PATH] = L"";
+					WCHAR szWiCModKitVersion[MAX_STRING_LENGTH] = L"";
+					WCHAR szWiCModKitDest[7][MAX_PATH];
+					memset(szWiCModKitDest, 0, sizeof(szWiCModKitDest));
+
+					modkit_registry_installpath(szWiCModKitDirectory);
+					modkit_registry_version(szWiCModKitVersion);
+
+					for (int i = DBGHELP_DLL; i <= WIC_ONLINE_EXE; i++)
+					{
+						wcscpy_s(szWiCModKitDest[i], szWiCModKitDirectory);
+						wcscat_s(szWiCModKitDest[i], szWicFixFiles[i]);
+
+						file_copy(szInstallSrc[i], szWiCModKitDest[i]);
+						strip_zone_identifier(szWiCModKitDest[i]);
+					}
+
+					wcscpy_s(mySettings.myWiCModKitInstallPath, szWiCModKitDirectory);
+					wcscpy_s(mySettings.myWiCModKitVersion, szWiCModKitVersion);
+					mySettings.myWiCModKitInstalled = true;
+				}
+			}
+			
+			//
 			// save mySettings configuration
 			//
 			wcscpy_s(mySettings.myWiCFixVersion, szProductVersion);
@@ -1370,7 +1496,11 @@ BOOL InstallFixes(HWND hWnd)
 BOOL UninstallFixes()
 {
 	WCHAR szFiles[5][MAX_PATH];
+	WCHAR szWiCEdFiles[5][MAX_PATH];
+	WCHAR szWiCModKitFiles[5][MAX_PATH];
 	memset(szFiles, 0, sizeof(szFiles));
+	memset(szWiCEdFiles, 0, sizeof(szWiCEdFiles));
+	memset(szWiCModKitFiles, 0, sizeof(szWiCModKitFiles));
 
 	// only remove the .dlls from the game directory, any other modifications can be manually undone by the user
 	wcscpy_s(szFiles[0], mySettings.myInstallPath);
@@ -1385,12 +1515,58 @@ BOOL UninstallFixes()
 	wcscat_s(szFiles[3], szWicFixFiles[WIC_DS_HOOK_DLL]);
 	wcscat_s(szFiles[4], szWicFixFiles[WIC_BT_HOOK_DLL]);
 
+	// remove files from game directory
 	file_delete(szFiles[0]);
 	file_copy(szFiles[1], szFiles[0]);
 	file_delete(szFiles[1]);
 	file_delete(szFiles[2]);
 	file_delete(szFiles[3]);
 	file_delete(szFiles[4]);
+
+	// remove files from wiced directory
+	if (mySettings.myWiCEdInstalled)
+	{
+		wcscpy_s(szWiCEdFiles[0], mySettings.myWiCEdInstallPath);
+		wcscpy_s(szWiCEdFiles[1], mySettings.myWiCEdInstallPath);
+		wcscpy_s(szWiCEdFiles[2], mySettings.myWiCEdInstallPath);
+		wcscpy_s(szWiCEdFiles[3], mySettings.myWiCEdInstallPath);
+		wcscpy_s(szWiCEdFiles[4], mySettings.myWiCEdInstallPath);
+
+		wcscat_s(szWiCEdFiles[0], szWicFixFiles[DBGHELP_DLL]);
+		wcscat_s(szWiCEdFiles[1], szWicFixFiles[DBGHELP_OLD_DLL]);
+		wcscat_s(szWiCEdFiles[2], szWicFixFiles[WIC_CL_HOOK_DLL]);
+		wcscat_s(szWiCEdFiles[3], szWicFixFiles[WIC_DS_HOOK_DLL]);
+		wcscat_s(szWiCEdFiles[4], szWicFixFiles[WIC_BT_HOOK_DLL]);
+
+		file_delete(szWiCEdFiles[0]);
+		file_delete(szWiCEdFiles[1]);
+		file_delete(szWiCEdFiles[2]);
+		file_delete(szWiCEdFiles[3]);
+		file_delete(szWiCEdFiles[4]);
+	}
+
+	// remove files from modkit directory
+	if (mySettings.myWiCModKitInstalled)
+	{
+		wcscpy_s(szWiCModKitFiles[0], mySettings.myWiCModKitInstallPath);
+		wcscpy_s(szWiCModKitFiles[1], mySettings.myWiCModKitInstallPath);
+		wcscpy_s(szWiCModKitFiles[2], mySettings.myWiCModKitInstallPath);
+		wcscpy_s(szWiCModKitFiles[3], mySettings.myWiCModKitInstallPath);
+		wcscpy_s(szWiCModKitFiles[4], mySettings.myWiCModKitInstallPath);
+
+		wcscat_s(szWiCModKitFiles[0], szWicFixFiles[DBGHELP_DLL]);
+		wcscat_s(szWiCModKitFiles[1], szWicFixFiles[DBGHELP_OLD_DLL]);
+		wcscat_s(szWiCModKitFiles[2], szWicFixFiles[WIC_CL_HOOK_DLL]);
+		wcscat_s(szWiCModKitFiles[3], szWicFixFiles[WIC_DS_HOOK_DLL]);
+		wcscat_s(szWiCModKitFiles[4], szWicFixFiles[WIC_BT_HOOK_DLL]);
+
+		file_delete(szWiCModKitFiles[0]);
+		file_copy(szWiCModKitFiles[1], szWiCModKitFiles[0]);
+		file_delete(szWiCModKitFiles[1]);
+		file_delete(szWiCModKitFiles[2]);
+		file_delete(szWiCModKitFiles[3]);
+		file_delete(szWiCModKitFiles[4]);
+	}
 
 	mySettings.Delete();
 
