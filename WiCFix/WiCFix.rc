@@ -171,19 +171,23 @@ END
 STRINGTABLE
 BEGIN
     IDS_APP_TITLE           "World in Conflict Repair Utility"
+    IDC_WICFIX              "WICFIX"
+END
+
+STRINGTABLE
+BEGIN
     IDS_MNUFILE             "&File"
     IDS_MNUITMCHANGEKEY     "Change CD &Key"
     IDS_MNUITMEXIT          "E&xit"
     IDS_MNUHELP             "&Help"
     IDS_MNUITMVIEWHELP      "&View Help"
-    IDC_WICFIX              "WICFIX"
     IDS_MNUITMDISCORD       "&Discord"
     IDS_MNUITMUPDATE        "Check for &Updates"
+    IDS_MNUITMABOUT         "&About ..."
 END
 
 STRINGTABLE
 BEGIN
-    IDS_MNUITMABOUT         "&About ..."
     IDS_LBLWICDIR           "World in Conflict installation directory:"
     IDS_BTNBROWSE           "Browse"
     IDS_FOLDERDLG_TITLE     "Select the World in Conflict directory"
@@ -199,6 +203,21 @@ BEGIN
     IDS_BTNINSTALL          "Install"
     IDS_BTNUNINSTALL        "Uninstall"
     IDS_LBLLOG              "Log:"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTDLG_TITLE      "About WiCFix"
+    IDS_ABOUTDLG_LBLABOUT   "WiCFix"
+    IDS_ABOUTDLG_LBLCOPY    "Copyright (c) 2015 - 2024"
+    IDS_ABOUTDLG_BTNOK      "OK"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_CDKEYDLG_TITLE      "Change CD key"
+    IDS_CDKEYDLG_BTNSAVE    "Save"
+    IDS_CDKEYDLG_BTNCANCEL  "Cancel"
 END
 
 STRINGTABLE
@@ -225,17 +244,6 @@ BEGIN
                             "Apply patched files to WiC Editor/Mod Kit? (recommended)"
     IDS_MSGBOX_CDKEY_NOTSAVED "CD key was not saved."
     IDS_MSGBOX_CDKEY_BADLENGTH "Please enter the CD key correctly."
-    IDS_CDKEYDLG_TITLE      "Change CD key"
-    IDS_CDKEYDLG_BTNSAVE    "Save"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_CDKEYDLG_BTNCANCEL  "Cancel"
-    IDS_ABOUTDLG_TITLE      "About WiCFix"
-    IDS_ABOUTDLG_LBLABOUT   "WiCFix"
-    IDS_ABOUTDLG_LBLCOPY    "Copyright (c) 2015 - 2024"
-    IDS_ABOUTDLG_BTNOK      "OK"
 END
 
 #endif    // English (United States) resources
