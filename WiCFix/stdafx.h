@@ -21,6 +21,7 @@
 #include <shellapi.h>
 #include <shlobj.h>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <commdlg.h>
 #include <winsock.h>

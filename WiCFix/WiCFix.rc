@@ -130,8 +130,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,1,0,0
- PRODUCTVERSION 1,1,0,0
+ FILEVERSION 1,2,0,0
+ PRODUCTVERSION 1,2,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -148,12 +148,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "WiCFix.exe"
             VALUE "FileDescription", "World in Conflict Repair Utility"
-            VALUE "FileVersion", "1.1.0.0"
+            VALUE "FileVersion", "1.2.0.0"
             VALUE "InternalName", "WiCFix.exe"
             VALUE "LegalCopyright", "Copyright (C) 2015 - 2024"
             VALUE "OriginalFilename", "WiCFix.exe"
             VALUE "ProductName", "WiCFix"
-            VALUE "ProductVersion", "1.1.0.0"
+            VALUE "ProductVersion", "1.2.0.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -177,8 +177,14 @@ END
 STRINGTABLE
 BEGIN
     IDS_MNUFILE             "&File"
-    IDS_MNUITMCHANGEKEY     "Change CD &Key"
+    IDS_MNUITMOPENMAPSFOLDER "Open Maps Folder"
+    IDS_MNUITMOPENMODSFOLDER "Open Mods Folder"
     IDS_MNUITMEXIT          "E&xit"
+    IDS_MNUTOOLS            "&Tools"
+    IDS_MNUITMCHANGEKEY     "Change CD &Key"
+    IDS_MNUITMGAMEOPTIONS   "&Game Options"
+    IDS_MNUITMDX10FLAG      "Enable DirectX 10"
+    IDS_MNUITMDELETESHADERCACHE "Delete &Shader Cache"
     IDS_MNUHELP             "&Help"
     IDS_MNUITMVIEWHELP      "&View Help"
     IDS_MNUITMDISCORD       "&Discord"
@@ -196,6 +202,10 @@ BEGIN
     IDS_LBLSTATUSBAD        "NOT DONE"
     IDS_CHKINSTALLMPFIX     "Install Multiplayer Fix"
     IDS_CHKINSTALLMAPS      "Install additional maps"
+END
+
+STRINGTABLE
+BEGIN
     IDS_CHKINSTALLTXT       "Open wicautoexec.txt"
     IDS_CHKDXFLAG           "Set myDX10Flag to 0"
     IDS_RESERVED1           "Reserved"
@@ -231,6 +241,8 @@ BEGIN
                             "Please select the World in Conflict game folder."
     IDS_MSGBOX_UNINSTALL_CONFIRMATION 
                             "Are you sure you want to remove the multiplayer fix?"
+    IDS_MSGBOX_DELETE_SHADERCACHE_CONFIRMATION 
+                            "Are you sure you want to delete the shader cache?\n\n(Files are moved to the Recycle Bin)"
     IDS_MSGBOX_HELPPAGE_CONFIRMATION 
                             "This will take you to a webpage, would you like to continue?"
     IDS_MSGBOX_DISCORD_CONFIRMATION 
@@ -240,6 +252,10 @@ BEGIN
     IDS_MSGBOX_NO_UPDATE_AVAILABLE "No update available."
     IDS_MSGBOX_INCORRECT_GAME_VERSION 
                             "World in Conflict Patch 1.0.1.1 is required\n\nVisit website to download patch?"
+END
+
+STRINGTABLE
+BEGIN
     IDS_MSGBOX_APPLY_WICEDMODKIT_FIX 
                             "Apply patched files to WiC Editor/Mod Kit? (recommended)"
     IDS_MSGBOX_CDKEY_NOTSAVED "CD key was not saved."

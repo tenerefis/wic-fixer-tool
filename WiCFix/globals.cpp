@@ -215,6 +215,11 @@ HRESULT get_my_documents(LPWSTR pszPath)
 	return SHGetFolderPath(NULL, CSIDL_MYDOCUMENTS, NULL, 0, pszPath);
 }
 
+HRESULT get_public_documents(LPWSTR pszPath)
+{
+	return SHGetFolderPath(NULL, CSIDL_COMMON_DOCUMENTS, NULL, 0, pszPath);
+}
+
 BOOL file_exists(LPCWSTR pszFile)
 {
 	DWORD dwAttrib = GetFileAttributes(pszFile);
@@ -266,6 +271,37 @@ BOOL file_delete(LPCWSTR pszPath)
 		return FALSE;
 
 	return DeleteFile(pszPath);
+}
+
+BOOL folder_delete(LPCWSTR pszPath)
+{
+	if (!folder_exists(pszPath))
+		return FALSE;
+
+	WCHAR szzPath[MAX_PATH] = L"";
+	wcscpy_s(szzPath, MAX_PATH, pszPath);
+	szzPath[wcslen(szzPath) + 1] = '\0';
+
+	SHFILEOPSTRUCT shFileOp;
+	ZeroMemory(&shFileOp, sizeof(SHFILEOPSTRUCT));
+
+	int iResult = 0;
+
+	shFileOp.hwnd = NULL;
+	shFileOp.wFunc = FO_DELETE;
+	shFileOp.pFrom = szzPath;
+	shFileOp.pTo = NULL;
+	shFileOp.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SIMPLEPROGRESS;
+	shFileOp.fAnyOperationsAborted = FALSE;
+	shFileOp.hNameMappings = NULL;
+	shFileOp.lpszProgressTitle = L"";
+
+	iResult = SHFileOperation(&shFileOp);
+
+	if (iResult != 0)
+		return FALSE;
+
+	return TRUE;
 }
 
 DWORD read_reg_dword(HKEY hKeyParent, LPCWSTR lpSubKey, LPCWSTR lpValue)

@@ -52,6 +52,7 @@ BOOL bMapTxtFilePresent = FALSE;
 BOOL bWicAutoexecPresent = FALSE;
 BOOL bWiCEdPresent = FALSE;
 BOOL bModKitPresent = FALSE;
+BOOL bGameOptionsTxtPresent = FALSE;
 ULONGLONG ullTotalBytesTransferred = 0;
 ULONGLONG ullLastBytesTransferred = 0;
 ULONGLONG ullTotalSizeOfAllMaps = 0;
@@ -64,6 +65,7 @@ WCHAR szKnownPaths[TOTAL_WIC_PATHS][MAX_PATH] = { L"", L"", L"", L"", L"", L"", 
 WCHAR szDrive[MAX_PATH] = L"";
 WCHAR szProgramFiles[MAX_PATH] = L"";
 WCHAR szMyDocuments[MAX_PATH] = L"";
+WCHAR szPublicDocuments[MAX_PATH] = L"";
 
 // wicfix internal settings
 WIC_Settings mySettings;
@@ -80,8 +82,14 @@ HMENU hMenu = nullptr;                          // menu bar handle
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 WCHAR szMnuFile[MAX_LOADSTRING];
-WCHAR szMnuItmChangeKey[MAX_LOADSTRING];
+WCHAR szMnuItmOpenMapsFolder[MAX_LOADSTRING];
+WCHAR szMnuItmOpenModsFolder[MAX_LOADSTRING];
 WCHAR szMnuItmExit[MAX_LOADSTRING];
+WCHAR szMnuTools[MAX_LOADSTRING];
+WCHAR szMnuItmChangeKey[MAX_LOADSTRING];
+WCHAR szMnuItmGameOptions[MAX_LOADSTRING];
+WCHAR szMnuItmDX10Flag[MAX_LOADSTRING];
+WCHAR szMnuItmDeleteShaderCache[MAX_LOADSTRING];
 WCHAR szMnuHelp[MAX_LOADSTRING];
 WCHAR szMnuItmViewHelp[MAX_LOADSTRING];
 WCHAR szMnuItmDiscord[MAX_LOADSTRING];
@@ -108,6 +116,7 @@ WCHAR szMsgBoxCaptionQuestion[MAX_LOADSTRING];
 WCHAR szMsgBoxRequireAdmin[MAX_LOADSTRING];
 WCHAR szMsgBoxGameFolderNotFound[MAX_LOADSTRING];
 WCHAR szMsgBoxUninstallConfirmation[MAX_LOADSTRING];
+WCHAR szMsgBoxDeleteShaderCacheConfirmation[MAX_LOADSTRING];
 WCHAR szMsgBoxHelpPageConfirmation[MAX_LOADSTRING];
 WCHAR szMsgBoxDiscordConfirmation[MAX_LOADSTRING];
 WCHAR szMsgBoxUpdateAvailable[MAX_LOADSTRING];
@@ -167,6 +176,13 @@ BOOL				ReadMapFile();
 BOOL				FindGameFolder(LPWSTR);
 BOOL				DetectWiCEd();
 BOOL				DetectModKit();
+BOOL				OpenMapsFolder(HWND);
+BOOL				OpenModsFolder(HWND);
+BOOL				DetectGameOptionsTxt();
+BOOL				GetGameOption(LPCSTR, LPSTR);
+BOOL				EditGameOption(LPCSTR, LPCSTR);
+BOOL				ToggleDX10Flag();
+BOOL				DeleteShaderCache(HWND);
 BOOL				HelpPage(HWND);
 BOOL				DiscordPage(HWND);
 BOOL				UpdateCheck(HWND);
@@ -206,8 +222,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDC_WICFIX, szWindowClass, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MNUFILE, szMnuFile, MAX_LOADSTRING);
-	LoadStringW(hInstance, IDS_MNUITMCHANGEKEY, szMnuItmChangeKey, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDS_MNUITMOPENMAPSFOLDER, szMnuItmOpenMapsFolder, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDS_MNUITMOPENMODSFOLDER, szMnuItmOpenModsFolder, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MNUITMEXIT, szMnuItmExit, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDS_MNUTOOLS, szMnuTools, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDS_MNUITMCHANGEKEY, szMnuItmChangeKey, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDS_MNUITMGAMEOPTIONS, szMnuItmGameOptions, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDS_MNUITMDX10FLAG, szMnuItmDX10Flag, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDS_MNUITMDELETESHADERCACHE, szMnuItmDeleteShaderCache, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MNUHELP, szMnuHelp, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MNUITMVIEWHELP, szMnuItmViewHelp, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MNUITMDISCORD, szMnuItmDiscord, MAX_LOADSTRING);
@@ -236,6 +258,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	LoadStringW(hInstance, IDS_MSGBOX_REQUIRE_ADMIN, szMsgBoxRequireAdmin, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MSGBOX_GAMEFOLDER_NOTFOUND, szMsgBoxGameFolderNotFound, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MSGBOX_UNINSTALL_CONFIRMATION, szMsgBoxUninstallConfirmation, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDS_MSGBOX_DELETE_SHADERCACHE_CONFIRMATION, szMsgBoxDeleteShaderCacheConfirmation, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MSGBOX_HELPPAGE_CONFIRMATION, szMsgBoxHelpPageConfirmation, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MSGBOX_DISCORD_CONFIRMATION, szMsgBoxDiscordConfirmation, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDS_MSGBOX_UPDATE_AVAILABLE, szMsgBoxUpdateAvailable, MAX_LOADSTRING);
@@ -427,11 +450,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			int wmId = LOWORD(wParam);
 			switch (wmId)
 			{
-			case IDM_CHANGECDKEY:
-				DialogBox(hInst, MAKEINTRESOURCE(IDD_CDKEYBOX), hWnd, CDKeyDialog);
+			case IDM_OPENMAPSFOLDER:
+				OpenMapsFolder(hWnd);
+				break;
+			case IDM_OPENMODSFOLDER:
+				OpenModsFolder(hWnd);
 				break;
 			case IDM_EXIT:
 				DestroyWindow(hWnd);
+				break;
+			case IDM_CHANGECDKEY:
+				DialogBox(hInst, MAKEINTRESOURCE(IDD_CDKEYBOX), hWnd, CDKeyDialog);
+				break;
+			case IDM_DX10FLAG:
+				ToggleDX10Flag();
+				break;
+			case IDM_DELETESHADERCACHE:
+				DeleteShaderCache(hWnd);
 				break;
 			case IDM_VIEWHELP:
 				HelpPage(hWnd);
@@ -620,6 +655,37 @@ BOOL SetApplicationState(ApplicationStateEnum iState, DWORD dwFlag)
 			SendMessage(hWndChkInstallMaps, BM_SETCHECK, BST_CHECKED, 0);
 			SendMessage(hWndChkInstallTxt, BM_SETCHECK, BST_CHECKED, 0);
 			//SendMessage(hWndChkDXFlag, BM_SETCHECK, BST_UNCHECKED, 0);
+
+			if (!bMapTxtFilePresent)
+			{
+				ShowWindow(hWndChkInstallMaps, SW_HIDE);
+				SendMessage(hWndChkInstallMaps, BM_SETCHECK, BST_UNCHECKED, 0);
+			}
+
+			if (!bWicAutoexecPresent)
+			{
+				ShowWindow(hWndChkInstallTxt, SW_HIDE);
+				SendMessage(hWndChkInstallTxt, BM_SETCHECK, BST_UNCHECKED, 0);
+			}
+
+			if (!bGameOptionsTxtPresent)
+			{
+				//EnableMenuItem(hMenu, (UINT_PTR)GetSubMenu(GetSubMenu(hMenu, 1), 0), MF_BYCOMMAND | MF_DISABLED); // disable the 'Game Options' submenu
+				EnableMenuItem(hMenu, IDM_DX10FLAG, MF_BYCOMMAND | MF_GRAYED);
+				CheckMenuItem(hMenu, IDM_DX10FLAG, MF_UNCHECKED);
+			}
+			else
+			{
+				//EnableMenuItem(hMenu, (UINT_PTR)GetSubMenu(GetSubMenu(hMenu, 1), 0), MF_BYCOMMAND | MF_ENABLED);
+				EnableMenuItem(hMenu, IDM_DX10FLAG, MF_BYCOMMAND | MF_ENABLED);
+				CHAR szOptionDX10Flag[MAX_STRING_LENGTH] = "";
+				GetGameOption("myDX10Flag", szOptionDX10Flag);
+
+				if (atoi(szOptionDX10Flag) == 1)
+					CheckMenuItem(hMenu, IDM_DX10FLAG, MF_CHECKED);
+				else
+					CheckMenuItem(hMenu, IDM_DX10FLAG, MF_UNCHECKED);
+			}
 		}
 		break;
 		case BROWSE_FOLDER:
@@ -733,18 +799,6 @@ BOOL SetApplicationState(ApplicationStateEnum iState, DWORD dwFlag)
 		}
 	}
 
-	if (!bMapTxtFilePresent)
-	{
-		ShowWindow(hWndChkInstallMaps, SW_HIDE);
-		SendMessage(hWndChkInstallMaps, BM_SETCHECK, BST_UNCHECKED, 0);
-	}
-
-	if (!bWicAutoexecPresent)
-	{
-		ShowWindow(hWndChkInstallTxt, SW_HIDE);
-		SendMessage(hWndChkInstallTxt, BM_SETCHECK, BST_UNCHECKED, 0);
-	}
-
 	return TRUE;
 }
 
@@ -752,6 +806,7 @@ BOOL LoadSettings(HWND hWnd)
 {
 	get_product_version(szProductVersion);
 	AppendVersionInformation();
+	BuildSystemPaths();
 
 	if (file_exists(L"data\\maps.txt"))
 		bMapTxtFilePresent = TRUE;
@@ -765,7 +820,9 @@ BOOL LoadSettings(HWND hWnd)
 	if (DetectModKit())
 		bModKitPresent = TRUE;
 
-	BuildSystemPaths();
+	if (DetectGameOptionsTxt())
+		bGameOptionsTxtPresent = TRUE;
+
 	ReadMapFile();
 	mySettings.Load();
 	SetApplicationState(DEFAULT, 0);
@@ -820,9 +877,15 @@ BOOL BuildSystemPaths()
 	if (lResult != S_OK)
 		return FALSE;
 
+	lResult = get_public_documents(szPublicDocuments);
+
+	if (lResult != S_OK)
+		return FALSE;
+
 	wcscat_s(szDrive, L"\\");
 	wcscat_s(szProgramFiles, L"\\");
 	wcscat_s(szMyDocuments, L"\\");
+	wcscat_s(szPublicDocuments, L"\\");
 
 	return TRUE;
 }
@@ -861,6 +924,8 @@ BOOL ReadMapFile()
 
 		i++;
 	}
+
+	mapFile.close();
 
 	return TRUE;
 }
@@ -999,6 +1064,166 @@ BOOL DetectModKit()
 	}
 
 	return bFound;
+}
+
+BOOL OpenMapsFolder(HWND hWnd)
+{
+	WCHAR szMapsFolder[MAX_PATH] = L"";
+	wcscpy_s(szMapsFolder, szMyDocuments);
+	wcscat_s(szMapsFolder, L"World in Conflict\\Downloaded\\maps");
+
+	if (!folder_exists(szMapsFolder))
+		folder_create(szMapsFolder);
+
+	HRESULT lResult = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+	if (SUCCEEDED(lResult))
+	{
+		ShellExecute(NULL, L"open", szMapsFolder, NULL, NULL, SW_SHOWNORMAL);
+		CoUninitialize();
+	}
+
+	return TRUE;
+}
+
+BOOL OpenModsFolder(HWND hWnd)
+{
+	WCHAR szModsFolder[MAX_PATH] = L"";
+	wcscpy_s(szModsFolder, szPublicDocuments);
+	wcscat_s(szModsFolder, L"World in Conflict\\Mods");
+
+	if (!folder_exists(szModsFolder))
+		folder_create(szModsFolder);
+
+	HRESULT lResult = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+	if (SUCCEEDED(lResult))
+	{
+		ShellExecute(NULL, L"open", szModsFolder, NULL, NULL, SW_SHOWNORMAL);
+		CoUninitialize();
+	}
+
+	return TRUE;
+}
+
+BOOL DetectGameOptionsTxt()
+{
+	WCHAR szGameOptionsTxt[MAX_PATH] = L"";
+	wcscpy_s(szGameOptionsTxt, szMyDocuments);
+	wcscat_s(szGameOptionsTxt, L"World in Conflict\\Game Options.txt");
+	return file_exists(szGameOptionsTxt);
+}
+
+BOOL GetGameOption(LPCSTR pszOption, LPSTR pszValue)
+{
+	BOOL bSuccess = FALSE;
+	std::wstring szGameOptionsTxt(szMyDocuments);
+	szGameOptionsTxt += L"World in Conflict\\Game Options.txt";
+
+	std::fstream optionsFile(szGameOptionsTxt, std::fstream::in | std::fstream::out);
+
+	if (optionsFile.is_open())
+	{
+		std::stringstream fileContents;
+		fileContents << optionsFile.rdbuf();
+
+		if (fileContents.good())
+		{
+			std::string findContents = fileContents.str();
+
+			if (findContents.length() > 0)
+			{
+				size_t startPos = findContents.find(pszOption, 0, strlen(pszOption));
+				size_t endPos = findContents.find("\n", startPos, 1);
+				strcpy_s(pszValue, MAX_STRING_LENGTH, findContents.substr(startPos + strlen(pszOption) + 1, endPos - startPos - strlen(pszOption) - 1).c_str());
+
+				if (strlen(pszValue) > 0)
+					bSuccess = TRUE;
+			}
+		}
+
+		optionsFile.close();
+	}
+
+	return bSuccess;
+}
+
+BOOL EditGameOption(LPCSTR pszOption, LPCSTR pszValue)
+{
+	BOOL bSuccess = FALSE;
+	std::wstring szGameOptionsTxt(szMyDocuments);
+	szGameOptionsTxt += L"World in Conflict\\Game Options.txt";
+
+	std::fstream optionsFile(szGameOptionsTxt, std::fstream::in | std::fstream::out);
+
+	if (optionsFile.is_open())
+	{
+		std::stringstream fileContents;
+		fileContents << optionsFile.rdbuf();
+
+		if (fileContents.good())
+		{
+			std::string editContents = fileContents.str();
+
+			if (editContents.length() > 0)
+			{
+				size_t startPos = editContents.find(pszOption, 0, strlen(pszOption));
+				size_t endPos = editContents.find("\n", startPos, 1);
+
+				editContents.replace(startPos + strlen(pszOption) + 1, endPos - startPos - strlen(pszOption) - 1, pszValue, strlen(pszValue));
+
+				optionsFile.seekp(0);
+				optionsFile << editContents;
+
+				if (optionsFile.good())
+					bSuccess = TRUE;
+			}
+		}
+
+		optionsFile.close();
+	}
+
+	return bSuccess;
+}
+
+BOOL ToggleDX10Flag()
+{
+	UINT uState = GetMenuState(hMenu, IDM_DX10FLAG, MF_BYCOMMAND);
+
+	if (uState == MF_CHECKED)
+	{
+		if (EditGameOption("myDX10Flag", "0"))
+			CheckMenuItem(hMenu, IDM_DX10FLAG, MF_UNCHECKED);
+	}
+	else
+	{
+		if (EditGameOption("myDX10Flag", "1"))
+			CheckMenuItem(hMenu, IDM_DX10FLAG, MF_CHECKED);
+	}
+
+	return TRUE;
+}
+
+BOOL DeleteShaderCache(HWND hWnd)
+{
+	WCHAR szShaderCacheDX9[MAX_PATH] = L"";
+	WCHAR szShaderCacheDX10[MAX_PATH] = L"";
+
+	wcscpy_s(szShaderCacheDX9, szMyDocuments);
+	wcscpy_s(szShaderCacheDX10, szMyDocuments);
+
+	wcscat_s(szShaderCacheDX9, L"World in Conflict\\Shadercache\\dx9");
+	wcscat_s(szShaderCacheDX10, L"World in Conflict\\Shadercache\\dx10");
+
+	int iResult = MessageBox(hWnd, szMsgBoxDeleteShaderCacheConfirmation, szMsgBoxCaptionQuestion, MB_OKCANCEL | MB_ICONQUESTION);
+	if (iResult == IDOK)
+	{
+		if (folder_exists(szShaderCacheDX9))
+			folder_delete(szShaderCacheDX9);
+
+		if (folder_exists(szShaderCacheDX10))
+			folder_delete(szShaderCacheDX10);
+	}
+
+	return TRUE;
 }
 
 BOOL HelpPage(HWND hWnd)
@@ -1741,13 +1966,24 @@ BOOL CreateFormObjects(HWND hWnd)
 	hMenu = CreateMenu();
 
 	HMENU hMenuFile = CreatePopupMenu();
+	HMENU hMenuTools = CreatePopupMenu();
+	HMENU hSubMenuGameOptions = CreatePopupMenu();
 	HMENU hMenuHelp = CreatePopupMenu();
 
 	AppendMenu(hMenu, MF_STRING | MF_POPUP, (UINT_PTR)hMenuFile, szMnuFile);
-	AppendMenu(hMenuFile, MF_STRING, IDM_CHANGECDKEY, szMnuItmChangeKey);
+	AppendMenu(hMenuFile, MF_STRING, IDM_OPENMAPSFOLDER, szMnuItmOpenMapsFolder);
+	AppendMenu(hMenuFile, MF_STRING, IDM_OPENMODSFOLDER, szMnuItmOpenModsFolder);
 	AppendMenu(hMenuFile, MF_SEPARATOR, 0, NULL);
 	AppendMenu(hMenuFile, MF_STRING, IDM_EXIT, szMnuItmExit);
 
+	AppendMenu(hMenu, MF_STRING | MF_POPUP, (UINT_PTR)hMenuTools, szMnuTools);
+	AppendMenu(hMenuTools, MF_STRING, IDM_CHANGECDKEY, szMnuItmChangeKey);
+	AppendMenu(hMenuTools, MF_SEPARATOR, 0, NULL);
+	AppendMenu(hMenuTools, MF_STRING | MF_POPUP, (UINT_PTR)hSubMenuGameOptions, szMnuItmGameOptions);
+	AppendMenu(hSubMenuGameOptions, MF_STRING, IDM_DX10FLAG, szMnuItmDX10Flag);
+	AppendMenu(hMenuTools, MF_SEPARATOR, 0, NULL);
+	AppendMenu(hMenuTools, MF_STRING, IDM_DELETESHADERCACHE, szMnuItmDeleteShaderCache);
+	
 	AppendMenu(hMenu, MF_STRING | MF_POPUP, (UINT_PTR)hMenuHelp, szMnuHelp);
 	AppendMenu(hMenuHelp, MF_STRING, IDM_VIEWHELP, szMnuItmViewHelp);
 	AppendMenu(hMenuHelp, MF_STRING, IDM_DISCORD, szMnuItmDiscord);

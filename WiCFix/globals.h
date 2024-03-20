@@ -38,6 +38,7 @@ HWND create_progressbar(int x, int y, int width, int height, HWND hWnd, UINT ID)
 HRESULT get_system_drive(LPWSTR pszPath);
 HRESULT get_program_files(LPWSTR pszPath);
 HRESULT get_my_documents(LPWSTR pszPath);
+HRESULT get_public_documents(LPWSTR pszPath);
 
 // file i/o
 BOOL file_exists(LPCWSTR pszFile);
@@ -45,6 +46,7 @@ BOOL folder_exists(LPCWSTR pszPath);
 BOOL folder_create(LPCWSTR pszPath);
 BOOL file_copy(LPCWSTR pszPathSrc, LPCWSTR pszPathDest);
 BOOL file_delete(LPCWSTR pszPath);
+BOOL folder_delete(LPCWSTR pszPath);
 
 // registry
 DWORD read_reg_dword(HKEY hKeyParent, LPCWSTR lpSubKey, LPCWSTR lpValue);
